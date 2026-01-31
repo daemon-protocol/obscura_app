@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+**/dist/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Frontend (not needed for backend deployment)
+obscura-landing/
+obscura-app/
+
+# Tests
+coverage/
+**/*.test.ts
+**/tests/
+
+# Contracts (not needed for backend)
+contracts/
+
+# Examples
+examples/
+
+# Documentation
+*.md
+!README.md
+!DEPLOYMENT.md
+
+# Environment files (use Railway variables instead)
+.env
+.env.*
+!backend/.env.example
+
+# Foundry/Solana artifacts
+backend/contracts/
+backend/11155111/
+backend/cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Simple server (not used in production)
+simple-server.js
