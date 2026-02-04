@@ -58,4 +58,48 @@ class AppGradients {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  // ============================================================
+  // Hybrid Mode Gradients
+  // ============================================================
+
+  /// Fast + Compressed: Blue to Purple gradient
+  static const blueToPurple = LinearGradient(
+    colors: [
+      Color(0xFF3B82F6), // Blue
+      Color(0xFF8B5CF6), // Purple
+    ],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+  );
+
+  /// Private + Compressed: Green to Purple gradient
+  static const greenToPurple = LinearGradient(
+    colors: [
+      Color(0xFF10B981), // Green (statusSuccess)
+      Color(0xFF8B5CF6), // Purple
+    ],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+  );
+
+  /// Fast Compressed badge gradient (subtle)
+  static const fastCompressedBadge = LinearGradient(
+    colors: [
+      Color(0x1A3B82F6), // rgba(59, 130, 246, 0.1)
+      Color(0x1A8B5CF6), // rgba(139, 92, 246, 0.1)
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  /// Private Compressed badge gradient (subtle)
+  static const privateCompressedBadge = LinearGradient(
+    colors: [
+      Color(0x1A10B981), // rgba(16, 185, 129, 0.1)
+      Color(0x1A8B5CF6), // rgba(139, 92, 246, 0.1)
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }

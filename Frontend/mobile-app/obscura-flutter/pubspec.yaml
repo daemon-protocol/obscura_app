@@ -21,11 +21,17 @@ dependencies:
   riverpod: ^2.4.9
   flutter_riverpod: ^2.4.9
 
-  # Solana
-  solana: ^0.31.0+1
-  solana_web3: ^0.1.0
+  # Light Protocol ZK Compression (from pub.dev)
+  # Note: light_sdk includes solana as a dependency (espresso-cash fork)
+  light_sdk: ^0.1.0-beta.1
+
+  # Solana (espresso-cash fork - also brought in by light_sdk, but listed here for direct imports)
+  solana: ^0.31.2
+
+  # Additional crypto dependencies (also included with light_sdk)
   bip39: ^1.0.6
   bs58: ^1.0.2
+  ed25519_hd_key: ^2.0.1
 
   # EVM
   web3dart: ^2.7.3
@@ -83,3 +89,5 @@ flutter:
 
 dependency_overrides:
   pinenacl: ^0.6.0
+  # Override web_socket_channel to resolve conflict between walletconnect_flutter_v2 and solana
+  web_socket_channel: ^3.0.0

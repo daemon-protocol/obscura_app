@@ -5,10 +5,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:solana/solana.dart';
 import 'package:web3dart/web3dart.dart';
 import '../models/models.dart';
+import '../models/magic_block_models.dart';
 import '../services/helius_service.dart';
+import '../services/magic_block_service.dart';
 
 /// Wallet Provider for Obscura App
 /// Supports both Solana (Mobile Wallet Adapter) and EVM (WalletConnect)
+/// with MagicBlock Ephemeral Rollups support
 class WalletProvider with ChangeNotifier {
   final _secureStorage = const FlutterSecureStorage();
 
@@ -283,6 +286,260 @@ class WalletProvider with ChangeNotifier {
     await _secureStorage.delete(key: 'wallet_chain');
     await _secureStorage.delete(key: 'wallet_address');
     await _secureStorage.delete(key: 'wallet_type');
+  }
+
+  // ============================================================
+  // MagicBlock Transaction Methods
+  // ============================================================
+
+  /// Sign and send transaction via MagicBlock Router
+  ///
+  /// Automatically routes to Ephemeral Rollups if accounts are delegated
+  /// or if useER is set to true.
+  Future<MagicTransactionResult?> signAndSendMagicTransaction(
+    String transaction, {
+    bool useER = false,
+    String? validator,
+    List<String>? accounts,
+  }) async {
+    if (!connected || walletType != WalletType.solana) {
+      debugPrint('Solana wallet required for MagicBlock transactions');
+      return null;
+    }
+
+    try {
+      // Get MagicBlock service
+      if (!MagicBlockService._instanceExists) {
+        debugPrint('MagicBlockService not initialized');
+        return null;
+      }
+
+      final magicBlock = MagicBlockService.instance;
+
+      // Sign the transaction first
+      final signedTransaction = await _signSolanaTransaction({});
+
+      // Send via MagicBlock Router
+      final result = await magicBlock.sendTransaction(
+        transaction,
+        signers: [address!],
+      );
+
+      return result;
+    } catch (e) {
+      debugPrint('MagicBlock transaction failed: $e');
+      return MagicTransactionResult(
+        signature: '',
+        routedToER: false,
+        timestamp: DateTime.now(),
+        error: e.toString(),
+      );
+    }
+  }
+
+  /// Delegate account to MagicBlock validator for ER execution
+  Future<String?> delegateMagicBlockAccount({
+    required String accountAddress,
+    String? validator,
+    int commitFrequencyMs = 30000,
+  }) async {
+    if (!connected || address == null) {
+      debugPrint('Wallet not connected');
+      return null;
+    }
+
+    try {
+      if (!MagicBlockService._instanceExists) {
+        debugPrint('MagicBlockService not initialized');
+        return null;
+      }
+
+      final magicBlock = MagicBlockService.instance;
+
+      // Create delegation signature
+      final delegationSignature = await magicBlock.delegateAccount(
+        accountAddress: accountAddress,
+        authority: address!,
+        validator: validator,
+        commitFrequencyMs: commitFrequencyMs,
+      );
+
+      return delegationSignature;
+    } catch (e) {
+      debugPrint('Delegation failed: $e');
+      return null;
+    }
+  }
+
+  /// Commit delegated accounts back to base layer
+  Future<String?> commitMagicBlockAccounts(List<String> accounts) async {
+    if (!connected || address == null) {
+      debugPrint('Wallet not connected');
+      return null;
+    }
+
+    try {
+      if (!MagicBlockService._instanceExists) {
+        debugPrint('MagicBlockService not initialized');
+        return null;
+      }
+
+      final magicBlock = MagicBlockService.instance;
+
+      final commitSignature = await magicBlock.commitAccounts(
+        accounts: accounts,
+        authority: address!,
+      );
+
+      return commitSignature;
+    } catch (e) {
+      debugPrint('Commit failed: $e');
+      return null;
+    }
+  }
+
+  /// Undelegate account from MagicBlock
+  Future<String?> undelegateMagicBlockAccount(String accountAddress) async {
+    if (!connected || address == null) {
+      debugPrint('Wallet not connected');
+      return null;
+    }
+
+    try {
+      if (!MagicBlockService._instanceExists) {
+        debugPrint('MagicBlockService not initialized');
+        return null;
+      }
+
+      final magicBlock = MagicBlockService.instance;
+
+      final undelegateSignature = await magicBlock.undelegateAccount(
+        accountAddress: accountAddress,
+        authority: address!,
+      );
+
+      return undelegateSignature;
+    } catch (e) {
+      debugPrint('Undelegation failed: $e');
+      return null;
+    }
+  }
+
+  /// Get delegation status for account
+  Future<DelegationStatus?> getDelegationStatus(String accountAddress) async {
+    if (!MagicBlockService._instanceExists) {
+      return null;
+    }
+
+    try {
+      final magicBlock = MagicBlockService.instance;
+      return await magicBlock.getAccountDelegationStatus(accountAddress);
+    } catch (e) {
+      debugPrint('Failed to get delegation status: $e');
+      return null;
+    }
+  }
+
+  /// Request VRF randomness
+  Future<VrfResult?> requestVRFRandomness({List<int>? seed}) async {
+    if (!connected || address == null) {
+      debugPrint('Wallet not connected');
+      return null;
+    }
+
+    if (!MagicBlockService._instanceExists) {
+      return null;
+    }
+
+    try {
+      final magicBlock = MagicBlockService.instance;
+      return await magicBlock.requestVrf(
+        requester: address!,
+        seed: seed,
+      );
+    } catch (e) {
+      debugPrint('VRF request failed: $e');
+      return null;
+    }
+  }
+
+  /// Execute private transfer using PER
+  Future<String?> executePrivateTransfer({
+    required String from,
+    required String to,
+    required int amount,
+  }) async {
+    if (!connected || address == null) {
+      debugPrint('Wallet not connected');
+      return null;
+    }
+
+    if (!MagicBlockService._instanceExists) {
+      return null;
+    }
+
+    try {
+      final magicBlock = MagicBlockService.instance;
+      return await magicBlock.executePrivateTransfer(
+        from: from,
+        to: to,
+        amount: amount,
+        authority: address!,
+      );
+    } catch (e) {
+      debugPrint('Private transfer failed: $e');
+      return null;
+    }
+  }
+
+  // ============================================================
+  // Execution Mode Support
+  // ============================================================
+
+  /// Current execution mode for transactions
+  ExecutionMode _executionMode = ExecutionMode.standard;
+  ExecutionMode get executionMode => _executionMode;
+
+  /// Set execution mode
+  void setExecutionMode(ExecutionMode mode) {
+    _executionMode = mode;
+    notifyListeners();
+  }
+
+  /// Toggle fast mode (ER)
+  void toggleFastMode() {
+    if (_executionMode == ExecutionMode.fast) {
+      _executionMode = ExecutionMode.standard;
+    } else {
+      _executionMode = ExecutionMode.fast;
+    }
+    notifyListeners();
+  }
+
+  /// Toggle compression mode
+  void toggleCompressionMode() {
+    if (_executionMode == ExecutionMode.compressed) {
+      _executionMode = ExecutionMode.standard;
+    } else {
+      _executionMode = ExecutionMode.compressed;
+    }
+    notifyListeners();
+  }
+
+  /// Toggle private mode (PER)
+  void togglePrivateMode() {
+    if (_executionMode == ExecutionMode.private) {
+      _executionMode = ExecutionMode.standard;
+    } else {
+      _executionMode = ExecutionMode.private;
+    }
+    notifyListeners();
+  }
+
+  /// Reset to standard mode
+  void resetExecutionMode() {
+    _executionMode = ExecutionMode.standard;
+    notifyListeners();
   }
 
   @override

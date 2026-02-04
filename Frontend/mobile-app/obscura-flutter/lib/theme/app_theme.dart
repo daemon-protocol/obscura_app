@@ -37,7 +37,7 @@ class AppTheme {
           statusBarBrightness: Brightness.dark,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.background.card,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -149,7 +149,7 @@ class AppTheme {
           ),
         ),
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.backgroundSecondary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppBorderRadius.lg),
