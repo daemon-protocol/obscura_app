@@ -1,6 +1,35 @@
 /// Environment configuration for Obscura Vault
 ///
-/// Configure your API keys and endpoints here
+/// # Configuration Guide
+///
+/// Before running the app, you need to configure the following API keys:
+///
+/// ## Required API Keys
+///
+/// 1. **Helius API Key** - Get from https://www.helius.dev
+///    - Required for Solana RPC operations and compression support
+///    - Sign up at https://www.helius.dev and create a new project
+///    - Copy your API key and replace 'YOUR_HELIUS_API_KEY' below
+///
+/// 2. **WalletConnect Project ID** - Get from https://cloud.walletconnect.com
+///    - Required for EVM wallet connections
+///    - Sign up at https://cloud.walletconnect.com
+///    - Create a new project and copy the Project ID
+///
+/// ## Optional API Keys
+///
+/// 3. **Obscura Program ID** - Your deployed program ID
+///    - Replace with your actual deployed Solana program ID
+///    - This is used for on-chain program interactions
+///
+/// 4. **MagicBlock API Key** - For advanced features
+///    - Get from MagicBlock if using their API services
+///    - Currently unused (ephemeral rollups use RPC directly)
+///
+/// ## Environment Setup
+///
+/// For development, set `isDevnet = true` to use devnet.
+/// For production, set `isDevnet = false` to use mainnet.
 class Env {
   // ============================================================
   // Obscura Backend API
@@ -12,8 +41,20 @@ class Env {
   // ============================================================
   // Helius (Solana RPC)
   // ============================================================
+  //
+  // Get your API key from: https://www.helius.dev
+  // 1. Sign up at https://www.helius.dev
+  // 2. Create a new project
+  // 3. Copy your API key below
 
-  static const String heliusApiKey = 'YOUR_HELIUS_API_KEY';
+  static const String heliusApiKey = String.fromEnvironment(
+    'HELIUS_API_KEY',
+    defaultValue: 'YOUR_HELIUS_API_KEY', // Replace with your actual key
+  );
+
+  /// Check if Helius API key is configured
+  static bool get isHeliusConfigured =>
+      heliusApiKey.isNotEmpty && heliusApiKey != 'YOUR_HELIUS_API_KEY';
 
   // Helius RPC endpoints
   static const String heliusDevnetRpc = 'https://rpc-devnet.helius.xyz';
@@ -42,7 +83,15 @@ class Env {
       'DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh';
 
   // Obscura Program ID (update after deployment)
-  static const String obscuraProgramId = 'YOUR_PROGRAM_ID';
+  // Get your program ID after deploying your Solana program
+  static const String obscuraProgramId = String.fromEnvironment(
+    'OBSCURA_PROGRAM_ID',
+    defaultValue: 'YOUR_PROGRAM_ID', // Replace with your deployed program ID
+  );
+
+  /// Check if Obscura Program ID is configured
+  static bool get isObscuraProgramConfigured =>
+      obscuraProgramId.isNotEmpty && obscuraProgramId != 'YOUR_PROGRAM_ID';
 
   // VRF Program ID (if available)
   static const String? vrfProgramId = null;
@@ -57,15 +106,34 @@ class Env {
   // ============================================================
   // Magic Block / Arcium (Confidential Computing) - Legacy
   // ============================================================
+  //
+  // Note: This API key is currently unused. Ephemeral rollups use the
+  // RPC endpoints directly without requiring an API key.
 
-  static const String magicBlockApiKey = 'YOUR_MAGIC_BLOCK_API_KEY';
+  static const String magicBlockApiKey = String.fromEnvironment(
+    'MAGIC_BLOCK_API_KEY',
+    defaultValue: '', // Currently unused
+  );
   static const String magicBlockUrl = 'https://api.magicblock.xyz';
 
   // ============================================================
   // WalletConnect (for EVM wallets)
   // ============================================================
+  //
+  // Get your Project ID from: https://cloud.walletconnect.com
+  // 1. Sign up at https://cloud.walletconnect.com
+  // 2. Create a new project
+  // 3. Copy the Project ID below
 
-  static const String walletConnectProjectId = 'YOUR_WALLETCONNECT_PROJECT_ID';
+  static const String walletConnectProjectId = String.fromEnvironment(
+    'WALLETCONNECT_PROJECT_ID',
+    defaultValue: 'YOUR_WALLETCONNECT_PROJECT_ID', // Replace with your actual Project ID
+  );
+
+  /// Check if WalletConnect is configured
+  static bool get isWalletConnectConfigured =>
+      walletConnectProjectId.isNotEmpty &&
+      walletConnectProjectId != 'YOUR_WALLETCONNECT_PROJECT_ID';
 
   // ============================================================
   // Network Selection
@@ -178,4 +246,59 @@ class Env {
 
   /// Check if running on mainnet
   static bool get isMainnetMode => !isDevnet;
+
+  // ============================================================
+  // Configuration Validation
+  // ============================================================
+
+  /// Check if all required configuration is set
+  static ConfigStatus getConfigStatus() {
+    return ConfigStatus(
+      isHeliusConfigured: isHeliusConfigured,
+      isWalletConnectConfigured: isWalletConnectConfigured,
+      isObscuraProgramConfigured: isObscuraProgramConfigured,
+      isFullyConfigured: isHeliusConfigured && isWalletConnectConfigured,
+      networkName: networkName,
+    );
+  }
+
+  /// Print configuration status (for debugging)
+  // ignore: avoid_print
+  static void printConfigStatus() {
+    final status = getConfigStatus();
+    print('========================================');
+    print('Obscura Vault Configuration Status');
+    print('========================================');
+    print('Network: ${status.networkName}');
+    print('Helius API Key: ${status.isHeliusConfigured ? "✓ Configured" : "✗ Not configured"}');
+    print('WalletConnect: ${status.isWalletConnectConfigured ? "✓ Configured" : "✗ Not configured"}');
+    print('Obscura Program ID: ${status.isObscuraProgramConfigured ? "✓ Configured" : "✗ Not configured"}');
+    print('Status: ${status.isFullyConfigured ? "✓ Ready" : "✗ Configuration needed"}');
+    print('========================================');
+  }
+}
+
+/// Configuration status model
+class ConfigStatus {
+  final bool isHeliusConfigured;
+  final bool isWalletConnectConfigured;
+  final bool isObscuraProgramConfigured;
+  final bool isFullyConfigured;
+  final String networkName;
+
+  ConfigStatus({
+    required this.isHeliusConfigured,
+    required this.isWalletConnectConfigured,
+    required this.isObscuraProgramConfigured,
+    required this.isFullyConfigured,
+    required this.networkName,
+  });
+
+  @override
+  String toString() {
+    return 'ConfigStatus(network: $networkName, helius: $isHeliusConfigured, '
+        'walletConnect: $isWalletConnectConfigured, '
+        'obscuraProgram: $isObscuraProgramConfigured, '
+        'fullyConfigured: $isFullyConfigured)';
+  }
 }

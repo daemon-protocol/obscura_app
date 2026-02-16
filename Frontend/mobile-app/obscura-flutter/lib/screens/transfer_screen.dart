@@ -4,6 +4,7 @@ import '../models/models.dart';
 import '../providers/providers.dart';
 import '../theme/theme.dart';
 import '../widgets/chip_selector.dart';
+import '../widgets/ui_helper.dart';
 
 class TransferScreen extends StatefulWidget {
   const TransferScreen({super.key});
@@ -15,9 +16,9 @@ class TransferScreen extends StatefulWidget {
 class _TransferScreenState extends State<TransferScreen> {
   final _recipientController = TextEditingController();
   final _amountController = TextEditingController();
-  final _assetController = TextEditingController(text: 'ETH');
+  final _assetController = TextEditingController(text: 'SOL');
 
-  ChainType _selectedChain = ChainType.ethereum;
+  ChainType _selectedChain = ChainType.solana;
   PrivacyLevel _selectedPrivacy = PrivacyLevel.shielded;
 
   @override
@@ -33,17 +34,18 @@ class _TransferScreenState extends State<TransferScreen> {
     final api = context.read<ApiProvider>();
 
     if (!wallet.connected) {
-      _showErrorDialog('Wallet Required', 'Please connect your wallet first');
+      UiHelper.showError(context, 'Please connect your wallet first');
       return;
     }
 
     if (_recipientController.text.isEmpty || _amountController.text.isEmpty) {
-      _showErrorDialog('Error', 'Please fill all fields');
+      UiHelper.showError(context, 'Please fill all fields');
       return;
     }
 
     try {
-      // Sign the transaction
+      UiHelper.showLoading(context, 'Processing transfer...');
+
       final signature = await wallet.signTransaction({
         'type': 'transfer',
         'recipient': _recipientController.text,
@@ -54,11 +56,11 @@ class _TransferScreenState extends State<TransferScreen> {
       });
 
       if (signature == null) {
-        _showErrorDialog('Error', 'Transaction signing failed');
+        UiHelper.hideSnackBar(context);
+        UiHelper.showError(context, 'Transaction signing failed');
         return;
       }
 
-      // Create transfer
       final result = await api.transfer(TransferRequest(
         recipient: _recipientController.text,
         asset: _assetController.text,
@@ -67,87 +69,19 @@ class _TransferScreenState extends State<TransferScreen> {
         privacyLevel: _selectedPrivacy,
       ));
 
+      UiHelper.hideSnackBar(context);
+
       if (result != null && mounted) {
-        _showSuccessDialog(result);
+        UiHelper.showSuccess(context, 'Transfer created: ${result.intentId.substring(0, 8)}...');
+        _recipientController.clear();
+        _amountController.clear();
       }
     } catch (e) {
+      UiHelper.hideSnackBar(context);
       if (mounted) {
-        _showErrorDialog('Error', e.toString());
+        UiHelper.showError(context, e.toString());
       }
     }
-  }
-
-  void _showSuccessDialog(IntentResponse intent) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.backgroundSecondary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppBorderRadius.lg),
-        ),
-        title: const Text(
-          'Transfer Created',
-          style: TextStyle(color: AppColors.textPrimary),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Your transfer is being processed privately.',
-              style: AppTextStyles.body.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              'Intent ID: ${intent.intentId}',
-              style: AppTextStyles.caption.copyWith(
-                color: AppColors.textMuted,
-                fontFamily: 'Courier',
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            },
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showErrorDialog(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.backgroundSecondary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppBorderRadius.lg),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(color: AppColors.textPrimary),
-        ),
-        content: Text(
-          message,
-          style: AppTextStyles.body.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -183,7 +117,7 @@ class _TransferScreenState extends State<TransferScreen> {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   'Connect your wallet to make private transfers',
-                  style: AppTextStyles.body.copyWith(
+                  style: AppTextStyles.bodyConst.copyWith(
                     color: AppColors.textSecondary,
                   ),
                   textAlign: TextAlign.center,
@@ -191,7 +125,7 @@ class _TransferScreenState extends State<TransferScreen> {
                 const SizedBox(height: AppSpacing.lg),
                 Text(
                   'Tap the "Connect" button in the header',
-                  style: AppTextStyles.label.copyWith(
+                  style: AppTextStyles.labelConst.copyWith(
                     color: AppColors.brandPrimary,
                   ),
                 ),
@@ -223,7 +157,7 @@ class _TransferScreenState extends State<TransferScreen> {
             const SizedBox(height: AppSpacing.xs),
             Text(
               'Send tokens with hidden amounts',
-              style: AppTextStyles.body.copyWith(
+              style: AppTextStyles.bodyConst.copyWith(
                 color: AppColors.textMuted,
               ),
             ),
@@ -236,12 +170,12 @@ class _TransferScreenState extends State<TransferScreen> {
             const SizedBox(height: AppSpacing.lg),
             const Text(
               'Recipient Address',
-              style: AppTextStyles.label,
+              style: AppTextStyles.labelConst,
             ),
             const SizedBox(height: AppSpacing.sm),
             TextField(
               controller: _recipientController,
-              style: AppTextStyles.body,
+              style: AppTextStyles.bodyConst,
               decoration: const InputDecoration(
                 hintText: '0x... or wallet address',
               ),
@@ -251,7 +185,7 @@ class _TransferScreenState extends State<TransferScreen> {
             const SizedBox(height: AppSpacing.lg),
             const Text(
               'Amount',
-              style: AppTextStyles.label,
+              style: AppTextStyles.labelConst,
             ),
             const SizedBox(height: AppSpacing.sm),
             Row(
@@ -259,7 +193,7 @@ class _TransferScreenState extends State<TransferScreen> {
                 Expanded(
                   child: TextField(
                     controller: _amountController,
-                    style: AppTextStyles.body,
+                    style: AppTextStyles.bodyConst,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     decoration: const InputDecoration(
                       hintText: '0.0',
@@ -271,7 +205,7 @@ class _TransferScreenState extends State<TransferScreen> {
                   width: 80,
                   child: TextField(
                     controller: _assetController,
-                    style: AppTextStyles.body,
+                    style: AppTextStyles.bodyConst,
                     textAlign: TextAlign.center,
                     decoration: const InputDecoration(
                       hintText: 'ETH',
@@ -292,7 +226,7 @@ class _TransferScreenState extends State<TransferScreen> {
             const SizedBox(height: AppSpacing.lg),
             const Text(
               'Chain',
-              style: AppTextStyles.label,
+              style: AppTextStyles.labelConst,
             ),
             const SizedBox(height: AppSpacing.sm),
             ChipSelector<ChainType>(
@@ -306,7 +240,7 @@ class _TransferScreenState extends State<TransferScreen> {
             const SizedBox(height: AppSpacing.lg),
             const Text(
               'Privacy Level',
-              style: AppTextStyles.label,
+              style: AppTextStyles.labelConst,
             ),
             const SizedBox(height: AppSpacing.sm),
             ChipSelector<PrivacyLevel>(
@@ -347,18 +281,6 @@ class _TransferScreenState extends State<TransferScreen> {
                 ),
               ),
             ),
-
-            // Result
-            if (api.transferIntent != null) ...[
-              const SizedBox(height: AppSpacing.lg),
-              _buildResultCard(api.transferIntent!),
-            ],
-
-            // Error
-            if (api.transferError != null) ...[
-              const SizedBox(height: AppSpacing.lg),
-              _buildErrorCard(api.transferError!),
-            ],
           ],
         ),
       ),
@@ -389,84 +311,9 @@ class _TransferScreenState extends State<TransferScreen> {
           const SizedBox(width: AppSpacing.sm),
           Text(
             'From: ${wallet.formatWalletAddress}',
-            style: AppTextStyles.body.copyWith(
+            style: AppTextStyles.bodyConst.copyWith(
               color: AppColors.textSecondary,
               fontFamily: 'Courier',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildResultCard(IntentResponse intent) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: const Color(0x1010B981), // rgba(16, 185, 129, 0.1)
-        borderRadius: BorderRadius.circular(AppBorderRadius.md),
-        border: Border.all(
-          color: const Color(0x3010B981), // rgba(16, 185, 129, 0.3)
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Text('✅', style: TextStyle(fontSize: 16)),
-              SizedBox(width: AppSpacing.sm),
-              Text(
-                'Transfer Created',
-                style: TextStyle(
-                  color: AppColors.statusSuccess,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'Intent ID: ${intent.intentId}',
-            style: AppTextStyles.caption.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          Text(
-            'Commitment: ${intent.commitment.substring(0, 20)}...',
-            style: AppTextStyles.caption.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorCard(String error) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: const Color(0x10EF4444), // rgba(239, 68, 68, 0.1)
-        borderRadius: BorderRadius.circular(AppBorderRadius.md),
-        border: Border.all(
-          color: const Color(0x30EF4444), // rgba(239, 68, 68, 0.3)
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          const Text('❌', style: TextStyle(fontSize: 16)),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Text(
-              error,
-              style: const TextStyle(
-                color: AppColors.statusError,
-                fontSize: 14,
-              ),
             ),
           ),
         ],

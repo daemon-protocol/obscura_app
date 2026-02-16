@@ -32,6 +32,9 @@ class MagicBlockService {
   /// Check if instance exists
   static bool get _instanceExists => _instance != null;
 
+  /// Check if service is initialized (public getter)
+  static bool get isInitialized => _instance != null;
+
   /// Get singleton instance
   static MagicBlockService get instance {
     if (_instance == null) {

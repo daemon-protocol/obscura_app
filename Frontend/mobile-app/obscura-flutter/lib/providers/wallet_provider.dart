@@ -45,12 +45,24 @@ class WalletProvider with ChangeNotifier {
           orElse: () => WalletType.solana,
         );
 
-        _state = WalletState(
-          connected: true,
-          address: savedAddress,
-          chain: chain,
-          walletType: type,
-        );
+        // Restore proper wallet state based on type
+        if (type == WalletType.solana) {
+          _state = WalletState(
+            connected: true,
+            address: savedAddress,
+            solanaPublicKey: Ed25519HDPublicKey.fromBase58(savedAddress),
+            chain: chain,
+            walletType: type,
+          );
+        } else {
+          _state = WalletState(
+            connected: true,
+            address: savedAddress,
+            evmAddress: EthereumAddress.fromHex(savedAddress),
+            chain: chain,
+            walletType: type,
+          );
+        }
 
         await refreshBalance();
         _connectionController.add(_state);
@@ -309,7 +321,7 @@ class WalletProvider with ChangeNotifier {
 
     try {
       // Get MagicBlock service
-      if (!MagicBlockService._instanceExists) {
+      if (!MagicBlockService.isInitialized) {
         debugPrint('MagicBlockService not initialized');
         return null;
       }
@@ -349,7 +361,7 @@ class WalletProvider with ChangeNotifier {
     }
 
     try {
-      if (!MagicBlockService._instanceExists) {
+      if (!MagicBlockService.isInitialized) {
         debugPrint('MagicBlockService not initialized');
         return null;
       }
@@ -379,7 +391,7 @@ class WalletProvider with ChangeNotifier {
     }
 
     try {
-      if (!MagicBlockService._instanceExists) {
+      if (!MagicBlockService.isInitialized) {
         debugPrint('MagicBlockService not initialized');
         return null;
       }
@@ -406,7 +418,7 @@ class WalletProvider with ChangeNotifier {
     }
 
     try {
-      if (!MagicBlockService._instanceExists) {
+      if (!MagicBlockService.isInitialized) {
         debugPrint('MagicBlockService not initialized');
         return null;
       }
@@ -427,7 +439,7 @@ class WalletProvider with ChangeNotifier {
 
   /// Get delegation status for account
   Future<DelegationStatus?> getDelegationStatus(String accountAddress) async {
-    if (!MagicBlockService._instanceExists) {
+    if (!MagicBlockService.isInitialized) {
       return null;
     }
 
@@ -447,7 +459,7 @@ class WalletProvider with ChangeNotifier {
       return null;
     }
 
-    if (!MagicBlockService._instanceExists) {
+    if (!MagicBlockService.isInitialized) {
       return null;
     }
 
@@ -474,7 +486,7 @@ class WalletProvider with ChangeNotifier {
       return null;
     }
 
-    if (!MagicBlockService._instanceExists) {
+    if (!MagicBlockService.isInitialized) {
       return null;
     }
 

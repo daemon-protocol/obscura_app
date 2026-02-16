@@ -26,6 +26,9 @@ class HeliusService {
 
   static HeliusService? _instance;
 
+  /// Check if service is initialized
+  static bool get isInitialized => _instance != null;
+
   static HeliusService get instance {
     if (_instance == null) {
       throw Exception('HeliusService not initialized. Call init() first.');

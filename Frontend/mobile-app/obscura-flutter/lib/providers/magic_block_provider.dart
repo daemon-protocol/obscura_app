@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import '../config/env.dart';
 import '../models/magic_block_models.dart';
 import '../services/magic_block_service.dart';
 
@@ -173,7 +174,7 @@ class MagicBlockProvider with ChangeNotifier {
     _slotSubscription = Stream.periodic(const Duration(seconds: 5), (_) async {
       _currentSlot = await _service.getSlot();
       notifyListeners();
-    }).asStream().listen((_) {});
+    }).listen((_) {});
   }
 
   // ============================================================

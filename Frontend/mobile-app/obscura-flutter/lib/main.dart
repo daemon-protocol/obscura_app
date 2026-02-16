@@ -6,13 +6,20 @@ import 'config/env.dart';
 import 'models/magic_block_models.dart';
 import 'models/models.dart';
 import 'theme/app_theme.dart';
+import 'screens/main_navigation_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/transfer_screen.dart';
 import 'screens/swap_screen.dart';
+import 'screens/dark_pool_screen.dart';
+import 'screens/dark_otc_screen.dart';
+import 'screens/history_screen.dart';
+import 'screens/portfolio_screen.dart';
 import 'providers/wallet_provider.dart';
 import 'providers/api_provider.dart';
 import 'providers/magic_block_provider.dart';
 import 'providers/rpc_provider.dart';
+import 'providers/dark_pool_provider.dart';
+import 'providers/otc_provider.dart';
 import 'services/helius_service.dart';
 import 'services/magic_block_service.dart';
 import 'services/light_protocol_service.dart';
@@ -81,6 +88,10 @@ class ObscuraApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => WalletProvider()),
         ChangeNotifierProvider(create: (_) => ApiProvider()),
 
+        // Feature Providers
+        ChangeNotifierProvider(create: (_) => DarkPoolProvider()),
+        ChangeNotifierProvider(create: (_) => OTCProvider()),
+
         // MagicBlock Provider
         ChangeNotifierProvider(
           create: (_) => MagicBlockProvider()..init(
@@ -90,7 +101,7 @@ class ObscuraApp extends StatelessWidget {
         ),
 
         // RPC Provider (initialized after MagicBlock)
-        ChangeNotifierProxy2<MagicBlockProvider, WalletProvider, RpcProvider>(
+        ChangeNotifierProxyProvider2<MagicBlockProvider, WalletProvider, RpcProvider>(
           create: (context) {
             final magicBlock = MagicBlockService.instance;
             final helius = HeliusService.instance;
@@ -113,10 +124,14 @@ class ObscuraApp extends StatelessWidget {
         title: Env.appName,
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
-        home: const HomeScreen(),
+        home: const MainNavigationScreen(),
         routes: {
           '/transfer': (context) => const TransferScreen(),
           '/swap': (context) => const SwapScreen(),
+          '/dark-pool': (context) => const DarkPoolScreen(),
+          '/dark-otc': (context) => const DarkOTCScreen(),
+          '/history': (context) => const HistoryScreen(),
+          '/portfolio': (context) => const PortfolioScreen(),
         },
       ),
     );

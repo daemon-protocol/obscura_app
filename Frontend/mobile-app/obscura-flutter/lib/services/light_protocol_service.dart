@@ -2,6 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:light_sdk/light_sdk.dart' as light_sdk;
 import 'package:solana/solana.dart';
 
+/// Callback function type for getting regular SOL balance from RPC
+///
+/// This allows the LightProtocolService to query regular SOL balances
+/// from any RPC provider (Helius, MagicBlock, etc.) without depending
+/// on a specific implementation.
+typedef RegularBalanceProvider = Future<double> Function(String address);
+
 /// Light Protocol ZK Compression Service
 ///
 /// Uses the official light_sdk package for:
@@ -14,10 +21,15 @@ import 'package:solana/solana.dart';
 class LightProtocolService {
   LightProtocolService._({
     required this.rpcUrl,
-  });
+    RegularBalanceProvider? regularBalanceProvider,
+  }) : _regularBalanceProvider = regularBalanceProvider;
 
   final String rpcUrl;
   late final light_sdk.Rpc _rpc;
+
+  /// Optional callback for getting regular SOL balances from an RPC provider
+  /// When provided, getTotalBalance will include both regular and compressed SOL
+  final RegularBalanceProvider? _regularBalanceProvider;
 
   static LightProtocolService? _instance;
 
@@ -29,9 +41,35 @@ class LightProtocolService {
   }
 
   /// Initialize the service
-  static void init(String rpcUrl) {
-    _instance = LightProtocolService._(rpcUrl: rpcUrl);
+  ///
+  /// [rpcUrl] The Helius RPC URL with compression support
+  /// [regularBalanceProvider] Optional callback for getting regular SOL balances
+  ///
+  /// Example usage with RpcProvider:
+  /// ```dart
+  /// LightProtocolService.init(
+  ///   rpcUrl,
+  ///   regularBalanceProvider: (address) => rpcProvider.getBalance(address),
+  /// );
+  /// ```
+  static void init(
+    String rpcUrl, {
+    RegularBalanceProvider? regularBalanceProvider,
+  }) {
+    _instance = LightProtocolService._(
+      rpcUrl: rpcUrl,
+      regularBalanceProvider: regularBalanceProvider,
+    );
     _instance!._rpc = light_sdk.Rpc.create(rpcUrl);
+  }
+
+  /// Set or update the regular balance provider callback
+  void setRegularBalanceProvider(RegularBalanceProvider? provider) {
+    // Note: Since this is a singleton, the provider would need to be stored
+    // differently. For now, this indicates the intended pattern.
+    if (provider != null) {
+      debugPrint('Regular balance provider should be set during init()');
+    }
   }
 
   /// Get RPC instance
@@ -39,6 +77,9 @@ class LightProtocolService {
 
   /// Check if service is initialized
   static bool get isInitialized => _instance != null;
+
+  /// Check if a regular balance provider is available
+  bool get hasRegularBalanceProvider => _regularBalanceProvider != null;
 
   // ============================================================
   // SOL Compression
@@ -82,17 +123,85 @@ class LightProtocolService {
   /// Get total balance (regular + compressed)
   ///
   /// Returns the sum of regular SOL balance and compressed SOL balance.
+  ///
+  /// If a [RegularBalanceProvider] callback was provided during initialization,
+  /// this method will query both the regular SOL balance via RPC and the
+  /// compressed balance via Light Protocol, returning the total.
+  ///
+  /// If no callback is available, only the compressed balance is returned.
   Future<BigInt> getTotalBalance(Ed25519HDPublicKey owner) async {
     try {
       // Get compressed balance
       final compressedBalance = await getCompressedBalance(owner);
 
-      // For regular balance, we'd need to call a standard RPC
-      // This is a placeholder - in production, you'd get this from Helius
-      return compressedBalance;
+      // Get regular balance from RPC callback if available
+      BigInt regularBalance = BigInt.zero;
+      if (_regularBalanceProvider != null) {
+        try {
+          final balance = await _regularBalanceProvider!(owner.toBase58());
+          regularBalance = BigInt.from((balance * 1e9).toInt());
+        } catch (e) {
+          debugPrint('Error getting regular balance from RPC: $e');
+          // Continue with compressed balance only
+        }
+      }
+
+      // Return total balance
+      return compressedBalance + regularBalance;
     } catch (e) {
       debugPrint('Error getting total balance: $e');
       return BigInt.zero;
+    }
+  }
+
+  /// Get regular SOL balance only (excluding compressed)
+  ///
+  /// Uses the RPC callback to get the regular SOL balance.
+  /// Returns 0 if no callback is available.
+  Future<BigInt> getRegularBalance(Ed25519HDPublicKey owner) async {
+    if (_regularBalanceProvider == null) {
+      debugPrint('Warning: No regular balance provider available');
+      return BigInt.zero;
+    }
+
+    try {
+      final balance = await _regularBalanceProvider!(owner.toBase58());
+      return BigInt.from((balance * 1e9).toInt());
+    } catch (e) {
+      debugPrint('Error getting regular balance: $e');
+      return BigInt.zero;
+    }
+  }
+
+  /// Get breakdown of balances (regular and compressed separately)
+  ///
+  /// Returns a BalanceBreakdown containing both regular and compressed balances.
+  Future<BalanceBreakdown> getBalanceBreakdown(Ed25519HDPublicKey owner) async {
+    try {
+      final compressedBalance = await getCompressedBalance(owner);
+      BigInt regularBalance = BigInt.zero;
+
+      if (_regularBalanceProvider != null) {
+        try {
+          final balance = await _regularBalanceProvider!(owner.toBase58());
+          regularBalance = BigInt.from((balance * 1e9).toInt());
+        } catch (e) {
+          debugPrint('Error getting regular balance from RPC: $e');
+        }
+      }
+
+      return BalanceBreakdown(
+        regularBalance: regularBalance,
+        compressedBalance: compressedBalance,
+        totalBalance: compressedBalance + regularBalance,
+      );
+    } catch (e) {
+      debugPrint('Error getting balance breakdown: $e');
+      return BalanceBreakdown(
+        regularBalance: BigInt.zero,
+        compressedBalance: BigInt.zero,
+        totalBalance: BigInt.zero,
+      );
     }
   }
 
@@ -240,9 +349,12 @@ class LightProtocolService {
 
   /// Set network (devnet/mainnet)
   ///
-  /// Updates the RPC endpoint for the service.
+  /// Updates the RPC endpoint for the service while preserving the balance provider callback.
   void setNetwork(String rpcUrl) {
-    _instance = LightProtocolService._(rpcUrl: rpcUrl);
+    _instance = LightProtocolService._(
+      rpcUrl: rpcUrl,
+      regularBalanceProvider: _regularBalanceProvider,
+    );
     _instance!._rpc = light_sdk.Rpc.create(rpcUrl);
     debugPrint('Light Protocol network updated to: $rpcUrl');
   }
@@ -345,5 +457,56 @@ class CompressionResult {
       latencyMs: latencyMs,
       compressedAmount: BigInt.zero,
     );
+  }
+}
+
+/// Balance breakdown model
+///
+/// Contains the separate regular and compressed SOL balances,
+/// plus the total balance.
+class BalanceBreakdown {
+  final BigInt regularBalance;
+  final BigInt compressedBalance;
+  final BigInt totalBalance;
+
+  BalanceBreakdown({
+    required this.regularBalance,
+    required this.compressedBalance,
+    required this.totalBalance,
+  });
+
+  /// Get regular balance in SOL
+  double get regularBalanceSol => regularBalance.toDouble() / 1e9;
+
+  /// Get compressed balance in SOL
+  double get compressedBalanceSol => compressedBalance.toDouble() / 1e9;
+
+  /// Get total balance in SOL
+  double get totalBalanceSol => totalBalance.toDouble() / 1e9;
+
+  /// Check if there's any compressed balance
+  bool get hasCompressedBalance => compressedBalance > BigInt.zero;
+
+  /// Check if there's any regular balance
+  bool get hasRegularBalance => regularBalance > BigInt.zero;
+
+  @override
+  String toString() {
+    return 'BalanceBreakdown('
+        'regular: ${regularBalanceSol.toStringAsFixed(6)} SOL, '
+        'compressed: ${compressedBalanceSol.toStringAsFixed(6)} SOL, '
+        'total: ${totalBalanceSol.toStringAsFixed(6)} SOL)';
+  }
+
+  /// Convert to JSON for serialization
+  Map<String, dynamic> toJson() {
+    return {
+      'regularBalance': regularBalance.toString(),
+      'compressedBalance': compressedBalance.toString(),
+      'totalBalance': totalBalance.toString(),
+      'regularBalanceSol': regularBalanceSol,
+      'compressedBalanceSol': compressedBalanceSol,
+      'totalBalanceSol': totalBalanceSol,
+    };
   }
 }

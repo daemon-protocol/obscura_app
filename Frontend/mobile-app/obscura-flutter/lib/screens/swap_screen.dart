@@ -104,7 +104,7 @@ class _SwapScreenState extends State<SwapScreen> {
           children: [
             Text(
               'Your swap is being processed privately.',
-              style: AppTextStyles.body.copyWith(
+              style: AppTextStyles.bodyConst.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
@@ -145,7 +145,7 @@ class _SwapScreenState extends State<SwapScreen> {
         ),
         content: Text(
           message,
-          style: AppTextStyles.body.copyWith(
+          style: AppTextStyles.bodyConst.copyWith(
             color: AppColors.textSecondary,
           ),
         ),
@@ -192,7 +192,7 @@ class _SwapScreenState extends State<SwapScreen> {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   'Connect your wallet to make private swaps',
-                  style: AppTextStyles.body.copyWith(
+                  style: AppTextStyles.bodyConst.copyWith(
                     color: AppColors.textSecondary,
                   ),
                   textAlign: TextAlign.center,
@@ -200,7 +200,7 @@ class _SwapScreenState extends State<SwapScreen> {
                 const SizedBox(height: AppSpacing.lg),
                 Text(
                   'Tap the "Connect" button in the header',
-                  style: AppTextStyles.label.copyWith(
+                  style: AppTextStyles.labelConst.copyWith(
                     color: AppColors.brandPrimary,
                   ),
                 ),
@@ -232,7 +232,7 @@ class _SwapScreenState extends State<SwapScreen> {
             const SizedBox(height: AppSpacing.xs),
             Text(
               'Swap tokens with hidden amounts',
-              style: AppTextStyles.body.copyWith(
+              style: AppTextStyles.bodyConst.copyWith(
                 color: AppColors.textMuted,
               ),
             ),
@@ -284,7 +284,7 @@ class _SwapScreenState extends State<SwapScreen> {
             const SizedBox(height: AppSpacing.lg),
             const Text(
               'Privacy Level',
-              style: AppTextStyles.label,
+              style: AppTextStyles.labelConst,
             ),
             const SizedBox(height: AppSpacing.sm),
             ChipSelector<PrivacyLevel>(
@@ -367,7 +367,7 @@ class _SwapScreenState extends State<SwapScreen> {
           const SizedBox(width: AppSpacing.sm),
           Text(
             '${wallet.formatWalletAddress} • ${wallet.balance ?? "0.00"}',
-            style: AppTextStyles.body.copyWith(
+            style: AppTextStyles.bodyConst.copyWith(
               color: AppColors.textSecondary,
               fontFamily: 'Courier',
             ),
@@ -398,7 +398,7 @@ class _SwapScreenState extends State<SwapScreen> {
         children: [
           Text(
             label,
-            style: AppTextStyles.label,
+            style: AppTextStyles.labelConst,
           ),
           const SizedBox(height: AppSpacing.md),
           Row(
