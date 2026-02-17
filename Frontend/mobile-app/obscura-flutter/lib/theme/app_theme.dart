@@ -141,9 +141,9 @@ class AppTheme {
         selectedLabelStyle: AppTextStyles.caption,
         unselectedLabelStyle: AppTextStyles.caption,
       ),
-      bottomSheetTheme: BottomSheetThemeData(
+      bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: AppColors.backgroundSecondary,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(AppBorderRadius.xl),
           ),

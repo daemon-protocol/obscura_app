@@ -278,9 +278,9 @@ class _PremiumButtonState extends State<PremiumButton>
     return SizedBox(
       width: _getLoadingSize(),
       height: _getLoadingSize(),
-      child: CircularProgressIndicator(
+      child: const CircularProgressIndicator(
         strokeWidth: 2,
-        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
       ),
     );
   }
@@ -342,7 +342,6 @@ class PremiumIconButton extends StatefulWidget {
 class _PremiumIconButtonState extends State<PremiumIconButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _glowAnimation;
 
   @override
   void initState() {
@@ -350,9 +349,6 @@ class _PremiumIconButtonState extends State<PremiumIconButton>
     _controller = AnimationController(
       duration: AppAnimations.pulse,
       vsync: this,
-    );
-    _glowAnimation = Tween<double>(begin: 0.3, end: 0.6).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
 

@@ -99,6 +99,7 @@ class _DarkPoolScreenState extends State<DarkPoolScreen>
       usePrivateMode: wallet.executionMode == ExecutionMode.private,
     );
 
+    if (!mounted) return;
     UiHelper.hideSnackBar(context);
 
     if (order != null && mounted) {
@@ -358,7 +359,7 @@ class _DarkPoolScreenState extends State<DarkPoolScreen>
                 const Text('Trading Pair', style: AppTextStyles.labelConst),
                 const SizedBox(height: AppSpacing.sm),
                 DropdownButtonFormField<TradingPair>(
-                  value: _selectedPair,
+                  initialValue: _selectedPair,
                   decoration: InputDecoration(
                     filled: false,
                     border: OutlineInputBorder(
@@ -1085,6 +1086,7 @@ class _DarkPoolScreenState extends State<DarkPoolScreen>
 
     UiHelper.showLoading(context, 'Cancelling order...');
     final success = await darkPool.cancelOrder(orderId);
+    if (!mounted) return;
     UiHelper.hideSnackBar(context);
 
     if (success && mounted) {

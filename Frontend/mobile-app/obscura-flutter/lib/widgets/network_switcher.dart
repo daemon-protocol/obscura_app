@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/magic_block_models.dart';
-import '../config/env.dart';
 import '../theme/theme.dart';
 
 /// Network Switcher Widget
@@ -55,7 +54,7 @@ class NetworkSwitcher extends StatelessWidget {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.2) : Colors.transparent,
+          color: isSelected ? color.withValues(alpha: 0.2) : Colors.transparent,
           borderRadius: BorderRadius.circular(AppBorderRadius.full),
           border: isSelected
               ? Border.all(
@@ -184,7 +183,7 @@ class NetworkStatusCard extends StatelessWidget {
         color: AppColors.backgroundCard,
         borderRadius: BorderRadius.circular(AppBorderRadius.md),
         border: Border.all(
-          color: isConnected ? color.withOpacity(0.3) : AppColors.statusError.withOpacity(0.3),
+          color: isConnected ? color.withValues(alpha: 0.3) : AppColors.statusError.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -199,7 +198,7 @@ class NetworkStatusCard extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: (isConnected ? color : AppColors.statusError).withOpacity(0.5),
+                  color: (isConnected ? color : AppColors.statusError).withValues(alpha: 0.5),
                   blurRadius: 4,
                   spreadRadius: 1,
                 ),
@@ -247,7 +246,7 @@ class NetworkStatusCard extends StatelessWidget {
               child: AnimatedRotation(
                 duration: const Duration(milliseconds: 200),
                 turns: isRefreshing ? 0.5 : 0,
-                child: Icon(
+                child: const Icon(
                   Icons.refresh,
                   size: 20,
                   color: AppColors.textSecondary,
@@ -301,7 +300,7 @@ class NetworkSelector extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : AppColors.backgroundCard,
+          color: isSelected ? color.withValues(alpha: 0.1) : AppColors.backgroundCard,
           borderRadius: BorderRadius.circular(AppBorderRadius.md),
           border: Border.all(
             color: isSelected ? color : AppColors.borderDefault,
@@ -322,7 +321,7 @@ class NetworkSelector extends StatelessWidget {
                 ),
               ),
               child: isSelected
-                  ? Icon(
+                  ? const Icon(
                       Icons.check,
                       size: 16,
                       color: AppColors.textPrimary,
@@ -389,10 +388,10 @@ class NetworkBadge extends StatelessWidget {
         vertical: AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppBorderRadius.sm),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -439,7 +438,7 @@ class RpcEndpointDisplay extends StatelessWidget {
         color: AppColors.backgroundCard,
         borderRadius: BorderRadius.circular(AppBorderRadius.md),
         border: Border.all(
-          color: isMagicBlock ? AppColors.brandPrimary.withOpacity(0.3) : AppColors.borderDefault,
+          color: isMagicBlock ? AppColors.brandPrimary.withValues(alpha: 0.3) : AppColors.borderDefault,
           width: 1,
         ),
       ),
@@ -463,7 +462,7 @@ class RpcEndpointDisplay extends StatelessWidget {
               if (onCopy != null)
                 GestureDetector(
                   onTap: onCopy,
-                  child: Icon(
+                  child: const Icon(
                     Icons.copy,
                     size: 16,
                     color: AppColors.textSecondary,

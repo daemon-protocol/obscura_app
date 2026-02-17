@@ -3,11 +3,10 @@ import 'package:flutter/foundation.dart';
 import '../models/dark_pool_models.dart';
 import '../services/magic_block_service.dart';
 import '../services/light_protocol_service.dart';
-import '../services/helius_service.dart';
 
 /// Dark Pool Provider for managing private orders
 class DarkPoolProvider with ChangeNotifier {
-  List<Order> _myOrders = [];
+  final List<Order> _myOrders = [];
   OrderBook? _orderBook;
   List<Trade> _recentTrades = [];
   bool _loading = false;

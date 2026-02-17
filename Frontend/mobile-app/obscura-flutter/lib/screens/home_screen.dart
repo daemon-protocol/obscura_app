@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
@@ -10,8 +9,6 @@ import '../widgets/action_card.dart';
 import '../widgets/privacy_level_card.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/animated_glow.dart';
-import 'transfer_screen.dart';
-import 'swap_screen.dart';
 
 /// Home Screen - Neo-Noir Edition
 ///
@@ -109,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen>
             child: Container(
               width: 300,
               height: 300,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: RadialGradient(
                   colors: [
                     AppColors.brandGlow,
@@ -126,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen>
             child: Container(
               width: 400,
               height: 400,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: RadialGradient(
                   colors: [
                     AppColors.shadowGlow,
@@ -242,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen>
               Expanded(
                 child: Row(
                   children: [
-                    StatusGlow(
+                    const StatusGlow(
                       isActive: true,
                       type: StatusGlowType.success,
                       size: 8,
@@ -250,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen>
                     const SizedBox(width: AppSpacing.sm),
                     Flexible(
                       child: Text(
-                        wallet.chain?.displayName ?? 'Wallet',
+                        wallet.chain.displayName,
                         style: AppTextStyles.label.copyWith(
                           color: AppColors.brandAccent,
                           fontWeight: FontWeight.w600,
@@ -328,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen>
             ],
           ),
           if (api.healthLoading)
-            SizedBox(
+            const SizedBox(
               width: 16,
               height: 16,
               child: CircularProgressIndicator(
@@ -432,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen>
           style: AppTextStyles.subtitleLarge,
         ),
         const SizedBox(height: AppSpacing.md),
-        SingleChildScrollView(
+        const SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [

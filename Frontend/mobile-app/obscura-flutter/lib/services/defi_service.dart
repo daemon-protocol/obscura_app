@@ -91,7 +91,7 @@ class DeFiService {
 
       // Auto-commit if requested
       String? commitSignature;
-      if (autoCommit && (needsDelegation || delegationStatus?.state.isDelegated == true)) {
+      if (autoCommit && (needsDelegation || (delegationStatus.state.isDelegated))) {
         commitSignature = await magicBlockService.commitAccounts(
           accounts: [fromTokenAccount, toTokenAccount],
           authority: authority,

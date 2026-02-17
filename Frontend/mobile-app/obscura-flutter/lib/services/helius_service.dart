@@ -363,7 +363,7 @@ class HeliusService {
 
     final body = jsonEncode({
       'webhookURL': webhookUrl,
-      'transactionTypes': eventTypes.map((e) => e.name).toList(),
+      'transactionTypes': eventTypes.map((e) => e.apiName).toList(),
       if (accountAddress != null)
         'accountAddresses': [accountAddress]
       else if (accountAddresses != null)
@@ -558,17 +558,45 @@ class HeliusService {
 
 /// Webhook event types for Helius webhooks
 enum WebhookEventType {
-  TRANSACTION,
-  NATIVE_TRANSFER,
-  TOKEN_TRANSFER,
-  COMPRESSED_NFT_TRANSFER,
-  COMPRESSED_NFT_SALE,
-  ANY,
-  NFT_SALE,
-  NFT_LISTING,
-  NFT_DELISTING,
-  NFT_BID,
-  NFT_CANCEL_BID,
+  // ignore: constant_identifier_names
+  transaction,
+  // ignore: constant_identifier_names
+  nativeTransfer,
+  // ignore: constant_identifier_names
+  tokenTransfer,
+  // ignore: constant_identifier_names
+  compressedNftTransfer,
+  // ignore: constant_identifier_names
+  compressedNftSale,
+  // ignore: constant_identifier_names
+  any,
+  // ignore: constant_identifier_names
+  nftSale,
+  // ignore: constant_identifier_names
+  nftListing,
+  // ignore: constant_identifier_names
+  nftDelisting,
+  // ignore: constant_identifier_names
+  nftBid,
+  // ignore: constant_identifier_names
+  nftCancelBid;
+
+  /// Get the API string representation (SCREAMING_CASE)
+  String get apiName {
+    switch (this) {
+      case WebhookEventType.transaction: return 'TRANSACTION';
+      case WebhookEventType.nativeTransfer: return 'NATIVE_TRANSFER';
+      case WebhookEventType.tokenTransfer: return 'TOKEN_TRANSFER';
+      case WebhookEventType.compressedNftTransfer: return 'COMPRESSED_NFT_TRANSFER';
+      case WebhookEventType.compressedNftSale: return 'COMPRESSED_NFT_SALE';
+      case WebhookEventType.any: return 'ANY';
+      case WebhookEventType.nftSale: return 'NFT_SALE';
+      case WebhookEventType.nftListing: return 'NFT_LISTING';
+      case WebhookEventType.nftDelisting: return 'NFT_DELISTING';
+      case WebhookEventType.nftBid: return 'NFT_BID';
+      case WebhookEventType.nftCancelBid: return 'NFT_CANCEL_BID';
+    }
+  }
 }
 
 /// Priority fee estimate from Helius

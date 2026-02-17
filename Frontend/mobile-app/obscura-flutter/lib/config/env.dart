@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Environment configuration for Obscura Vault
 ///
 /// # Configuration Guide
@@ -263,18 +265,17 @@ class Env {
   }
 
   /// Print configuration status (for debugging)
-  // ignore: avoid_print
   static void printConfigStatus() {
     final status = getConfigStatus();
-    print('========================================');
-    print('Obscura Vault Configuration Status');
-    print('========================================');
-    print('Network: ${status.networkName}');
-    print('Helius API Key: ${status.isHeliusConfigured ? "✓ Configured" : "✗ Not configured"}');
-    print('WalletConnect: ${status.isWalletConnectConfigured ? "✓ Configured" : "✗ Not configured"}');
-    print('Obscura Program ID: ${status.isObscuraProgramConfigured ? "✓ Configured" : "✗ Not configured"}');
-    print('Status: ${status.isFullyConfigured ? "✓ Ready" : "✗ Configuration needed"}');
-    print('========================================');
+    debugPrint('========================================');
+    debugPrint('Obscura Vault Configuration Status');
+    debugPrint('========================================');
+    debugPrint('Network: ${status.networkName}');
+    debugPrint('Helius API Key: ${status.isHeliusConfigured ? "✓ Configured" : "✗ Not configured"}');
+    debugPrint('WalletConnect: ${status.isWalletConnectConfigured ? "✓ Configured" : "✗ Not configured"}');
+    debugPrint('Obscura Program ID: ${status.isObscuraProgramConfigured ? "✓ Configured" : "✗ Not configured"}');
+    debugPrint('Status: ${status.isFullyConfigured ? "✓ Ready" : "✗ Configuration needed"}');
+    debugPrint('========================================');
   }
 }
 

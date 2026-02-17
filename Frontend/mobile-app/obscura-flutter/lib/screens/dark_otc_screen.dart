@@ -72,6 +72,7 @@ class _DarkOTCScreenState extends State<DarkOTCScreen>
       usePrivateMode: wallet.executionMode == ExecutionMode.private,
     );
 
+    if (!mounted) return;
     UiHelper.hideSnackBar(context);
 
     if (rfq != null && mounted) {
@@ -318,7 +319,7 @@ class _DarkOTCScreenState extends State<DarkOTCScreen>
                 const Text('Trading Pair', style: AppTextStyles.labelConst),
                 const SizedBox(height: AppSpacing.sm),
                 DropdownButtonFormField<String>(
-                  value: _selectedPair,
+                  initialValue: _selectedPair,
                   decoration: InputDecoration(
                     filled: false,
                     border: OutlineInputBorder(
@@ -421,7 +422,7 @@ class _DarkOTCScreenState extends State<DarkOTCScreen>
                 const Text('RFQ Expiry', style: AppTextStyles.labelConst),
                 const SizedBox(height: AppSpacing.sm),
                 DropdownButtonFormField<int>(
-                  value: _expiryMinutes,
+                  initialValue: _expiryMinutes,
                   decoration: InputDecoration(
                     filled: false,
                     border: OutlineInputBorder(
@@ -695,14 +696,6 @@ class _DarkOTCScreenState extends State<DarkOTCScreen>
                       ),
                     ),
                   ),
-                  if (false) ...[ // rfq.teeVerified
-                    const SizedBox(width: AppSpacing.sm),
-                    const Icon(
-                      Icons.verified,
-                      size: 16,
-                      color: AppColors.statusSuccess,
-                    ),
-                  ],
                 ],
               ),
               Container(
@@ -912,6 +905,7 @@ class _DarkOTCScreenState extends State<DarkOTCScreen>
       usePrivateMode: wallet.executionMode == ExecutionMode.private,
     );
 
+    if (!mounted) return;
     UiHelper.hideSnackBar(context);
 
     if (success && mounted) {

@@ -1,9 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/providers.dart';
 import '../theme/theme.dart';
-import '../utils/asset_mapper.dart';
 import 'wallet_modal.dart';
 import 'animated_glow.dart';
 
@@ -37,7 +35,7 @@ class _WalletButtonState extends State<WalletButton> {
         decoration: BoxDecoration(
           gradient: AppGradients.actionGradient,
           borderRadius: BorderRadius.circular(AppBorderRadius.md),
-          boxShadow: [AppShadows.glowSubtle],
+          boxShadow: const [AppShadows.glowSubtle],
         ),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
@@ -46,7 +44,7 @@ class _WalletButtonState extends State<WalletButton> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.wallet_outlined,
               size: 18,
               color: AppColors.textPrimary,
@@ -77,33 +75,32 @@ class _WalletButtonState extends State<WalletButton> {
             color: AppColors.border.glass,
             width: 1,
           ),
-          boxShadow: [AppShadows.glowSubtle],
+          boxShadow: const [AppShadows.glowSubtle],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             // Connection status indicator with glow
-            StatusGlow(
+            const StatusGlow(
               isActive: true,
               type: StatusGlowType.active,
               size: 6,
             ),
             const SizedBox(width: 4),
             // Chain indicator (shown first on mobile to save space)
-            if (wallet.chain != null)
-              Container(
+            Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.xs,
                   vertical: 2,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.brand.primary.withOpacity(0.2),
+                  color: AppColors.brand.primary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(AppBorderRadius.sm),
                 ),
                 child: Text(
-                  wallet.chain!.name.length > 8
-                      ? '${wallet.chain!.name.substring(0, 6)}...'
-                      : wallet.chain!.name,
+                  wallet.chain.name.length > 8
+                      ? '${wallet.chain.name.substring(0, 6)}...'
+                      : wallet.chain.name,
                   style: AppTextStyles.captionSmall.copyWith(
                     color: AppColors.brandAccent,
                     fontWeight: FontWeight.w600,
@@ -123,7 +120,7 @@ class _WalletButtonState extends State<WalletButton> {
               ),
             ),
             const SizedBox(width: 4),
-            Icon(
+            const Icon(
               Icons.expand_more,
               size: 14,
               color: AppColors.textSecondary,
@@ -185,7 +182,7 @@ class WalletButtonGlass extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.wallet_outlined,
               size: 16,
               color: AppColors.brandAccent,
@@ -216,7 +213,7 @@ class WalletButtonGlass extends StatelessWidget {
             color: AppColors.border.glass,
             width: 1,
           ),
-        boxShadow: [AppShadows.glowSubtle],
+        boxShadow: const [AppShadows.glowSubtle],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -230,7 +227,7 @@ class WalletButtonGlass extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.statusSuccess.withOpacity(0.5),
+                    color: AppColors.statusSuccess.withValues(alpha: 0.5),
                     blurRadius: 4,
                     spreadRadius: 1,
                   ),
@@ -257,7 +254,7 @@ class WalletButtonGlass extends StatelessWidget {
                     ),
             ),
             const SizedBox(width: 4),
-            Icon(
+            const Icon(
               Icons.expand_more,
               size: 14,
               color: AppColors.textSecondary,

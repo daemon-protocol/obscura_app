@@ -32,7 +32,6 @@ class PrivacyLevelCard extends StatefulWidget {
 class _PrivacyLevelCardState extends State<PrivacyLevelCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _selectionController;
-  late Animation<double> _glowAnimation;
 
   @override
   void initState() {
@@ -40,9 +39,6 @@ class _PrivacyLevelCardState extends State<PrivacyLevelCard>
     _selectionController = AnimationController(
       duration: AppAnimations.fast,
       vsync: this,
-    );
-    _glowAnimation = Tween<double>(begin: 0.3, end: 0.6).animate(
-      CurvedAnimation(parent: _selectionController, curve: Curves.easeInOut),
     );
 
     if (widget.isSelected) {
@@ -83,8 +79,8 @@ class _PrivacyLevelCardState extends State<PrivacyLevelCard>
               gradient: widget.isSelected
                   ? LinearGradient(
                       colors: [
-                        effectiveAccentColor.withOpacity(0.2),
-                        effectiveAccentColor.withOpacity(0.1),
+                        effectiveAccentColor.withValues(alpha: 0.2),
+                        effectiveAccentColor.withValues(alpha: 0.1),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -93,7 +89,7 @@ class _PrivacyLevelCardState extends State<PrivacyLevelCard>
               borderRadius: BorderRadius.circular(AppBorderRadius.md),
               border: Border.all(
                 color: widget.isSelected
-                    ? effectiveAccentColor.withOpacity(
+                    ? effectiveAccentColor.withValues(alpha: 
                         0.5 + (0.5 * _selectionController.value),
                       )
                     : AppColors.border.subtle,
@@ -102,7 +98,7 @@ class _PrivacyLevelCardState extends State<PrivacyLevelCard>
               boxShadow: widget.isSelected
                   ? [
                       BoxShadow(
-                        color: effectiveAccentColor.withOpacity(
+                        color: effectiveAccentColor.withValues(alpha: 
                           0.3 * _selectionController.value,
                         ),
                         blurRadius: 16,
@@ -122,7 +118,7 @@ class _PrivacyLevelCardState extends State<PrivacyLevelCard>
                       filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.02),
+                          color: Colors.white.withValues(alpha: 0.02),
                           borderRadius: BorderRadius.circular(AppBorderRadius.md),
                         ),
                       ),
@@ -139,8 +135,8 @@ class _PrivacyLevelCardState extends State<PrivacyLevelCard>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              effectiveAccentColor.withOpacity(0.8),
-                              effectiveAccentColor.withOpacity(0.2),
+                              effectiveAccentColor.withValues(alpha: 0.8),
+                              effectiveAccentColor.withValues(alpha: 0.2),
                             ],
                           ),
                         ),
@@ -199,8 +195,8 @@ class _PrivacyLevelCardState extends State<PrivacyLevelCard>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  accentColor.withOpacity(0.3),
-                  accentColor.withOpacity(0.1),
+                  accentColor.withValues(alpha: 0.3),
+                  accentColor.withValues(alpha: 0.1),
                 ],
               )
             : null,
@@ -208,7 +204,7 @@ class _PrivacyLevelCardState extends State<PrivacyLevelCard>
         borderRadius: BorderRadius.circular(AppBorderRadius.sm),
         border: Border.all(
           color: widget.isSelected
-              ? accentColor.withOpacity(0.5)
+              ? accentColor.withValues(alpha: 0.5)
               : AppColors.border.subtle,
           width: 1,
         ),
@@ -330,8 +326,8 @@ class PrivacyLevelPill extends StatelessWidget {
           gradient: isSelected
               ? LinearGradient(
                   colors: [
-                    level.color.withOpacity(0.3),
-                    level.color.withOpacity(0.1),
+                    level.color.withValues(alpha: 0.3),
+                    level.color.withValues(alpha: 0.1),
                   ],
                 )
               : AppGradients.glassGradient,

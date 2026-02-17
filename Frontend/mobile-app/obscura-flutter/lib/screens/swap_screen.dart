@@ -1,9 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
 import '../providers/providers.dart';
 import '../theme/theme.dart';
 import '../widgets/chip_selector.dart';
+import '../widgets/glass_card.dart';
 
 class SwapScreen extends StatefulWidget {
   const SwapScreen({super.key});
@@ -166,26 +168,248 @@ class _SwapScreenState extends State<SwapScreen> {
 
     // Show connect prompt if not connected
     if (!wallet.connected) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Private Swap'),
+      return _buildWalletConnectPrompt();
+    }
+
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF0A0A0E),
+              Color(0xFF050508),
+              Color(0xFF000000),
+            ],
+          ),
         ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Stack(
+          children: [
+            // Atmospheric glow effects
+            _buildBackground(),
+            // Main content
+            SafeArea(
+              child: Column(
+                children: [
+                  _buildGlassHeader(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Wallet Info
+                          _buildWalletInfo(wallet),
+                          const SizedBox(height: AppSpacing.lg),
+
+                          // Token In Card
+                          _buildSwapCard(
+                            label: 'You Pay',
+                            amountController: _amountInController,
+                            selectedToken: _tokenIn,
+                            onTokenSelect: (token) =>
+                                setState(() => _tokenIn = token),
+                          ),
+
+                          // Switch Button
+                          const SizedBox(height: AppSpacing.sm),
+                          _buildSwitchButton(),
+                          const SizedBox(height: AppSpacing.sm),
+
+                          // Token Out Card
+                          _buildSwapCard(
+                            label: 'You Receive (min)',
+                            amountController: _amountOutController,
+                            selectedToken: _tokenOut,
+                            onTokenSelect: (token) =>
+                                setState(() => _tokenOut = token),
+                          ),
+
+                          // Privacy Level
+                          const SizedBox(height: AppSpacing.lg),
+                          Text(
+                            'Privacy Level',
+                            style: AppTextStyles.label.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          ChipSelector<PrivacyLevel>(
+                            options: PrivacyLevel.values,
+                            selectedOption: _selectedPrivacy,
+                            onSelect: (value) =>
+                                setState(() => _selectedPrivacy = value),
+                            labelBuilder: (level) =>
+                                '${level.emoji} ${level.displayName}',
+                          ),
+
+                          // Submit Button
+                          const SizedBox(height: AppSpacing.xl),
+                          _buildSubmitButton(api),
+
+                          // Result
+                          if (api.swapIntent != null) ...[
+                            const SizedBox(height: AppSpacing.lg),
+                            _buildResultCard(api.swapIntent!),
+                          ],
+
+                          // Error
+                          if (api.swapError != null) ...[
+                            const SizedBox(height: AppSpacing.lg),
+                            _buildErrorCard(api.swapError!),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBackground() {
+    return Positioned.fill(
+      child: Stack(
+        children: [
+          Positioned(
+            top: -50,
+            right: -80,
+            child: Container(
+              width: 250,
+              height: 250,
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.brandGlow,
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 100,
+            left: -60,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.shadow.glow,
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGlassHeader() {
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          decoration: BoxDecoration(
+            gradient: AppGradients.glassGradient,
+            border: Border(
+              bottom: BorderSide(
+                color: AppColors.border.glass,
+                width: 1,
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  gradient: AppGradients.blueToLightBlue,
+                  borderRadius: BorderRadius.circular(AppBorderRadius.md),
+                ),
+                child: const Icon(
+                  Icons.swap_horiz_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Private Swap',
+                    style: AppTextStyles.h3Const.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    'Hidden Amounts • Zero-Knowledge',
+                    style: AppTextStyles.captionSmall.copyWith(
+                      color: AppColors.brandAccent,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWalletConnectPrompt() {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF0A0A0E),
+              Color(0xFF050508),
+              Color(0xFF000000),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  '🔐',
-                  style: TextStyle(fontSize: 64),
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: AppGradients.glassPurple,
+                    borderRadius: BorderRadius.circular(AppBorderRadius.xl),
+                    border: Border.all(
+                      color: AppColors.border.glass,
+                      width: 1,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.swap_horiz_rounded,
+                    size: 48,
+                    color: AppColors.brandPrimary,
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.lg),
-                const Text(
-                  'Wallet Required',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
+                const SizedBox(height: AppSpacing.xl),
+                Text(
+                  'Private Swap',
+                  style: AppTextStyles.h2Const.copyWith(
                     color: AppColors.textPrimary,
                   ),
                 ),
@@ -195,173 +419,33 @@ class _SwapScreenState extends State<SwapScreen> {
                   style: AppTextStyles.bodyConst.copyWith(
                     color: AppColors.textSecondary,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Text(
-                  'Tap the "Connect" button in the header',
-                  style: AppTextStyles.labelConst.copyWith(
-                    color: AppColors.brandPrimary,
-                  ),
                 ),
               ],
             ),
           ),
-        ),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Private Swap'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title
-            const Text(
-              'Private Swap',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              'Swap tokens with hidden amounts',
-              style: AppTextStyles.bodyConst.copyWith(
-                color: AppColors.textMuted,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-
-            // Wallet Info
-            _buildWalletInfo(wallet),
-
-            // Token In Card
-            const SizedBox(height: AppSpacing.lg),
-            _buildSwapCard(
-              label: 'You Pay',
-              amountController: _amountInController,
-              selectedToken: _tokenIn,
-              onTokenSelect: (token) => setState(() => _tokenIn = token),
-            ),
-
-            // Switch Button
-            const SizedBox(height: AppSpacing.sm),
-            Align(
-              alignment: Alignment.center,
-              child: GestureDetector(
-                onTap: _switchTokens,
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    gradient: AppGradients.purpleToBlue,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.swap_vert,
-                    color: AppColors.textPrimary,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ),
-
-            // Token Out Card
-            _buildSwapCard(
-              label: 'You Receive (min)',
-              amountController: _amountOutController,
-              selectedToken: _tokenOut,
-              onTokenSelect: (token) => setState(() => _tokenOut = token),
-            ),
-
-            // Privacy Level
-            const SizedBox(height: AppSpacing.lg),
-            const Text(
-              'Privacy Level',
-              style: AppTextStyles.labelConst,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            ChipSelector<PrivacyLevel>(
-              options: PrivacyLevel.values,
-              selectedOption: _selectedPrivacy,
-              onSelect: (value) => setState(() => _selectedPrivacy = value),
-              labelBuilder: (level) => '${level.emoji} ${level.displayName}',
-            ),
-
-            // Submit Button
-            const SizedBox(height: AppSpacing.xl),
-            SizedBox(
-              width: double.infinity,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: AppGradients.blueToLightBlue,
-                  borderRadius: BorderRadius.circular(AppBorderRadius.md),
-                ),
-                child: ElevatedButton(
-                  onPressed: api.swapLoading ? null : _handleSwap,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    disabledBackgroundColor: Colors.transparent,
-                  ),
-                  child: api.swapLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.textPrimary,
-                            ),
-                          ),
-                        )
-                      : const Text('🔄 Execute Private Swap'),
-                ),
-              ),
-            ),
-
-            // Result
-            if (api.swapIntent != null) ...[
-              const SizedBox(height: AppSpacing.lg),
-              _buildResultCard(api.swapIntent!),
-            ],
-
-            // Error
-            if (api.swapError != null) ...[
-              const SizedBox(height: AppSpacing.lg),
-              _buildErrorCard(api.swapError!),
-            ],
-          ],
         ),
       ),
     );
   }
 
   Widget _buildWalletInfo(WalletProvider wallet) {
-    return Container(
+    return GlassCardCompact(
       padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundCard,
-        borderRadius: BorderRadius.circular(AppBorderRadius.md),
-        border: Border.all(
-          color: AppColors.brandPrimary,
-          width: 1,
-        ),
-      ),
       child: Row(
         children: [
           Container(
             width: 8,
             height: 8,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.statusSuccess,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.statusSuccess.withValues(alpha: 0.5),
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                ),
+              ],
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -383,22 +467,16 @@ class _SwapScreenState extends State<SwapScreen> {
     required String selectedToken,
     required void Function(String) onTokenSelect,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundCard,
-        borderRadius: BorderRadius.circular(AppBorderRadius.lg),
-        border: Border.all(
-          color: AppColors.borderDefault,
-          width: 1,
-        ),
-      ),
+    return GlassCard(
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
-            style: AppTextStyles.labelConst,
+            style: AppTextStyles.label.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
           Row(
@@ -406,20 +484,19 @@ class _SwapScreenState extends State<SwapScreen> {
               Expanded(
                 child: TextField(
                   controller: amountController,
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
+                  style: AppTextStyles.h2Const.copyWith(
                     color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700,
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.zero,
                     hintText: '0.0',
-                    hintStyle: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
+                    hintStyle: AppTextStyles.h2Const.copyWith(
                       color: AppColors.textMuted,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -434,25 +511,32 @@ class _SwapScreenState extends State<SwapScreen> {
                 final isSelected = token == selectedToken;
                 return GestureDetector(
                   onTap: () => onTokenSelect(token),
-                  child: Container(
+                  child: AnimatedContainer(
+                    duration: AppAnimations.fast,
                     margin: const EdgeInsets.only(right: AppSpacing.sm),
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.md,
                       vertical: AppSpacing.sm,
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.brandPrimary
-                          : AppColors.backgroundTertiary,
-                      borderRadius: BorderRadius.circular(AppBorderRadius.full),
+                      gradient: isSelected
+                          ? AppGradients.purpleToBlue
+                          : AppGradients.glassGradient,
+                      borderRadius:
+                          BorderRadius.circular(AppBorderRadius.full),
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.brandPrimary
+                            : AppColors.border.glass,
+                        width: 1,
+                      ),
                     ),
                     child: Text(
                       token,
-                      style: TextStyle(
+                      style: AppTextStyles.label.copyWith(
                         color: isSelected
                             ? AppColors.textPrimary
                             : AppColors.textMuted,
-                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -466,29 +550,118 @@ class _SwapScreenState extends State<SwapScreen> {
     );
   }
 
-  Widget _buildResultCard(IntentResponse intent) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: const Color(0x1010B981), // rgba(16, 185, 129, 0.1)
-        borderRadius: BorderRadius.circular(AppBorderRadius.md),
-        border: Border.all(
-          color: const Color(0x3010B981), // rgba(16, 185, 129, 0.3)
-          width: 1,
+  Widget _buildSwitchButton() {
+    return Align(
+      alignment: Alignment.center,
+      child: GestureDetector(
+        onTap: _switchTokens,
+        child: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            gradient: AppGradients.purpleToBlue,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.brandPrimary.withValues(alpha: 0.4),
+                blurRadius: 16,
+                spreadRadius: -4,
+              ),
+            ],
+            border: Border.all(
+              color: AppColors.border.glass,
+              width: 1,
+            ),
+          ),
+          child: const Icon(
+            Icons.swap_vert,
+            color: AppColors.textPrimary,
+            size: 22,
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton(ApiProvider api) {
+    return SizedBox(
+      width: double.infinity,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: AppGradients.blueToLightBlue,
+          borderRadius: BorderRadius.circular(AppBorderRadius.md),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF6366F1).withValues(alpha: 0.3),
+              blurRadius: 16,
+              spreadRadius: -4,
+            ),
+          ],
+        ),
+        child: ElevatedButton(
+          onPressed: api.swapLoading ? null : _handleSwap,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            disabledBackgroundColor: Colors.transparent,
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+          ),
+          child: api.swapLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.textPrimary,
+                    ),
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.swap_horiz_rounded, color: Colors.white),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(
+                      'Execute Private Swap',
+                      style: AppTextStyles.button.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultCard(IntentResponse intent) {
+    return GlassCard(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      borderColor: AppColors.statusSuccess.withValues(alpha: 0.3),
+      gradient: LinearGradient(
+        colors: [
+          AppColors.statusSuccess.withValues(alpha: 0.1),
+          AppColors.statusSuccess.withValues(alpha: 0.05),
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Text('✅', style: TextStyle(fontSize: 16)),
-              SizedBox(width: AppSpacing.sm),
+              const Icon(
+                Icons.check_circle_outline,
+                size: 18,
+                color: AppColors.statusSuccess,
+              ),
+              const SizedBox(width: AppSpacing.sm),
               Text(
                 'Swap Created',
-                style: TextStyle(
+                style: AppTextStyles.label.copyWith(
                   color: AppColors.statusSuccess,
-                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -513,26 +686,30 @@ class _SwapScreenState extends State<SwapScreen> {
   }
 
   Widget _buildErrorCard(String error) {
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: const Color(0x10EF4444), // rgba(239, 68, 68, 0.1)
-        borderRadius: BorderRadius.circular(AppBorderRadius.md),
-        border: Border.all(
-          color: const Color(0x30EF4444), // rgba(239, 68, 68, 0.3)
-          width: 1,
-        ),
+      borderColor: AppColors.statusError.withValues(alpha: 0.3),
+      gradient: LinearGradient(
+        colors: [
+          AppColors.statusError.withValues(alpha: 0.1),
+          AppColors.statusError.withValues(alpha: 0.05),
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
       ),
       child: Row(
         children: [
-          const Text('❌', style: TextStyle(fontSize: 16)),
+          const Icon(
+            Icons.error_outline,
+            size: 18,
+            color: AppColors.statusError,
+          ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
               error,
-              style: const TextStyle(
+              style: AppTextStyles.bodyConst.copyWith(
                 color: AppColors.statusError,
-                fontSize: 14,
               ),
             ),
           ),

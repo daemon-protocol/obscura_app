@@ -6,8 +6,8 @@ import '../services/light_protocol_service.dart';
 
 /// OTC Provider for managing RFQs and quotes
 class OTCProvider with ChangeNotifier {
-  List<RFQ> _myRFQs = [];
-  Map<String, List<Quote>> _quotesByRFQ = {};
+  final List<RFQ> _myRFQs = [];
+  final Map<String, List<Quote>> _quotesByRFQ = {};
   bool _loading = false;
   String? _error;
 

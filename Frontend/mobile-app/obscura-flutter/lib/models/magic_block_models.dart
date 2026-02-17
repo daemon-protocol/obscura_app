@@ -2,6 +2,7 @@
 ///
 /// This file contains all models for interacting with MagicBlock's
 /// Ephemeral Rollups (ER), Delegation, VRF, and PER features.
+library;
 
 /// Delegation state for an account on MagicBlock ER
 enum DelegationState {

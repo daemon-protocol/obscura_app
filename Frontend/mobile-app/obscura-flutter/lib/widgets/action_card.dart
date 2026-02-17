@@ -81,14 +81,14 @@ class _ActionCardState extends State<ActionCard>
       builder: (context, child) {
         return AnimatedContainer(
           duration: AppAnimations.fast,
-          transform: Matrix4.identity()..scale(_isPressed ? 0.98 : 1.0),
+          transform: Matrix4.diagonal3Values(_isPressed ? 0.98 : 1.0, _isPressed ? 0.98 : 1.0, 1.0),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                widget.gradient.colors.first.withOpacity(0.9),
-                widget.gradient.colors.last.withOpacity(0.7),
+                widget.gradient.colors.first.withValues(alpha: 0.9),
+                widget.gradient.colors.last.withValues(alpha: 0.7),
               ],
               stops: widget.gradient.stops,
             ),
@@ -96,20 +96,20 @@ class _ActionCardState extends State<ActionCard>
             boxShadow: [
               // Soft shadow
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
               // Glow effect on hover
               if (_isHovered)
                 BoxShadow(
-                  color: widget.gradient.colors.first.withOpacity(0.4),
+                  color: widget.gradient.colors.first.withValues(alpha: 0.4),
                   blurRadius: 24,
                   spreadRadius: -4,
                 ),
             ],
             border: Border.all(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               width: 1,
             ),
           ),
@@ -139,7 +139,7 @@ class _ActionCardState extends State<ActionCard>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.white.withOpacity(0.2),
+                          Colors.white.withValues(alpha: 0.2),
                           Colors.transparent,
                         ],
                       ),
@@ -202,6 +202,7 @@ class _ActionCardState extends State<ActionCard>
                 style: AppTextStyles.h3.copyWith(
                   color: AppColors.textSecondary,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
@@ -209,20 +210,24 @@ class _ActionCardState extends State<ActionCard>
                 style: AppTextStyles.bodySmall.copyWith(
                   color: AppColors.textMuted,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: AppSpacing.sm),
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.lock_outline,
                     size: 12,
                     color: AppColors.statusWarning,
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    'Connect wallet to use',
-                    style: AppTextStyles.captionSmall.copyWith(
-                      color: AppColors.statusWarning,
+                  Flexible(
+                    child: Text(
+                      'Connect wallet to use',
+                      style: AppTextStyles.captionSmall.copyWith(
+                        color: AppColors.statusWarning,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -239,7 +244,7 @@ class _ActionCardState extends State<ActionCard>
       return Container(
         padding: const EdgeInsets.all(AppSpacing.sm),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(AppBorderRadius.sm),
         ),
         child: widget.customIcon,
@@ -252,10 +257,10 @@ class _ActionCardState extends State<ActionCard>
       decoration: BoxDecoration(
         color: isLocked
             ? AppColors.background.card
-            : Colors.white.withOpacity(0.1),
+            : Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppBorderRadius.md),
         border: Border.all(
-          color: Colors.white.withOpacity(isLocked ? 0.05 : 0.1),
+          color: Colors.white.withValues(alpha: isLocked ? 0.05 : 0.1),
           width: 1,
         ),
       ),
@@ -377,13 +382,13 @@ class GlassActionCard extends StatelessWidget {
             ),
           ),
           if (locked)
-            Icon(
+            const Icon(
               Icons.lock_outline,
               size: 16,
               color: AppColors.statusWarning,
             )
         else
-          Icon(
+          const Icon(
             Icons.chevron_right,
             size: 20,
             color: AppColors.textSecondary,

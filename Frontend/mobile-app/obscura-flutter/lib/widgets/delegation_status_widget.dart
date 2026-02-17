@@ -61,7 +61,7 @@ class DelegationStatusWidget extends StatelessWidget {
                     vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.brandPrimary.withOpacity(0.2),
+                    color: AppColors.brandPrimary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(AppBorderRadius.full),
                   ),
                   child: Row(
@@ -275,10 +275,10 @@ class DelegationStatusWidget extends StatelessWidget {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.15),
+          color: color.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(AppBorderRadius.sm),
           border: Border.all(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             width: 1,
           ),
         ),

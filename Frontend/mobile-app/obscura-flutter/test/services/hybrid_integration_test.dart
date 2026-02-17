@@ -5,7 +5,7 @@ import 'package:obscura_vault/services/defi_service.dart';
 void main() {
   group('ExecutionMode Integration Tests', () {
     test('test_ExecutionMode_fastCompressed_routing_properties', () {
-      final mode = ExecutionMode.fastCompressed;
+      const mode = ExecutionMode.fastCompressed;
 
       expect(mode.usesER, true);
       expect(mode.usesCompression, true);
@@ -15,7 +15,7 @@ void main() {
     });
 
     test('test_ExecutionMode_privateCompressed_routing_properties', () {
-      final mode = ExecutionMode.privateCompressed;
+      const mode = ExecutionMode.privateCompressed;
 
       expect(mode.usesER, true);
       expect(mode.usesCompression, true);
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('test_ExecutionMode_values_are_complete', () {
-      final modes = ExecutionMode.values;
+      const modes = ExecutionMode.values;
 
       expect(modes.length, 6);
       expect(modes, contains(ExecutionMode.standard));
@@ -265,7 +265,7 @@ void main() {
 
   group('Mode Enumeration Tests', () {
     test('test_all_execution_modes_are_accessible', () {
-      final modes = ExecutionMode.values;
+      const modes = ExecutionMode.values;
 
       expect(modes.length, 6);
       expect(modes, contains(ExecutionMode.standard));
@@ -277,7 +277,7 @@ void main() {
     });
 
     test('test_hybrid_modes_are_last', () {
-      final modes = ExecutionMode.values;
+      const modes = ExecutionMode.values;
 
       // Hybrid modes should be the last two in the enum
       expect(modes[modes.length - 2], ExecutionMode.fastCompressed);
@@ -306,15 +306,15 @@ void main() {
     });
 
     test('test_DelegationStatus_equality', () {
-      final status1 = DelegationStatus(
+      const status1 = DelegationStatus(
         account: 'test_address',
         state: DelegationState.delegated,
       );
-      final status2 = DelegationStatus(
+      const status2 = DelegationStatus(
         account: 'test_address',
         state: DelegationState.delegated,
       );
-      final status3 = DelegationStatus(
+      const status3 = DelegationStatus(
         account: 'other_address',
         state: DelegationState.delegated,
       );
@@ -324,7 +324,7 @@ void main() {
     });
 
     test('test_DelegationStatus_toJson_fromJson', () {
-      final original = DelegationStatus(
+      const original = DelegationStatus(
         account: 'test_address',
         state: DelegationState.delegated,
         validator: 'validator_pubkey',
@@ -365,9 +365,9 @@ void main() {
     });
 
     test('test_ValidatorInfo_regionFlags', () {
-      final asia = ValidatorInfo(pubkey: 'key', region: 'asia', latency: 100, load: 0, available: true);
-      final eu = ValidatorInfo(pubkey: 'key', region: 'eu', latency: 100, load: 0, available: true);
-      final us = ValidatorInfo(pubkey: 'key', region: 'us', latency: 100, load: 0, available: true);
+      const asia = ValidatorInfo(pubkey: 'key', region: 'asia', latency: 100, load: 0, available: true);
+      const eu = ValidatorInfo(pubkey: 'key', region: 'eu', latency: 100, load: 0, available: true);
+      const us = ValidatorInfo(pubkey: 'key', region: 'us', latency: 100, load: 0, available: true);
 
       expect(asia.regionFlag, '🌏');
       expect(eu.regionFlag, '🇪🇺');
@@ -444,7 +444,7 @@ void main() {
 
   group('VrfResult Tests', () {
     test('test_VrfResult_randomnessHex', () {
-      final vrf = VrfResult(
+      const vrf = VrfResult(
         randomness: [0x12, 0x34, 0xAB, 0xCD],
         proof: [0xFF, 0xEE],
         slot: 100,

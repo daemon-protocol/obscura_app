@@ -128,7 +128,7 @@ class _WalletModalState extends State<WalletModal> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppBorderRadius.lg),
         ),
-        title: Text(
+        title: const Text(
           'Wallet Not Found',
           style: TextStyle(color: AppColors.textPrimary),
         ),
@@ -169,36 +169,41 @@ class _WalletModalState extends State<WalletModal> {
     final wallet = context.watch<WalletProvider>();
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.backgroundSecondary,
-        borderRadius: const BorderRadius.vertical(
+        borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppBorderRadius.xl),
         ),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(wallet.connected),
-              const SizedBox(height: AppSpacing.lg),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(wallet.connected),
+                const SizedBox(height: AppSpacing.lg),
 
-              if (_error != null) ...[
-                _buildErrorBanner(_error!),
-                const SizedBox(height: AppSpacing.md),
+                if (_error != null) ...[
+                  _buildErrorBanner(_error!),
+                  const SizedBox(height: AppSpacing.md),
+                ],
+
+                if (wallet.connected) ...[
+                  _buildConnectedInfo(wallet),
+                ] else ...[
+                  _buildWalletList(),
+                ],
+
+                const SizedBox(height: AppSpacing.lg),
+                _buildSecurityInfo(),
               ],
-
-              if (wallet.connected) ...[
-                _buildConnectedInfo(wallet),
-              ] else ...[
-                _buildWalletList(),
-              ],
-
-              const SizedBox(height: AppSpacing.lg),
-              _buildSecurityInfo(),
-            ],
+            ),
           ),
         ),
       ),
@@ -295,7 +300,7 @@ class _WalletModalState extends State<WalletModal> {
         // Full address
         Text(
           wallet.address ?? '',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 11,
             color: AppColors.textMuted,
             fontFamily: 'Courier',
@@ -377,7 +382,7 @@ class _WalletModalState extends State<WalletModal> {
         const SizedBox(height: AppSpacing.xs),
         Text(
           hint,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             color: AppColors.textMuted,
           ),
@@ -423,7 +428,7 @@ class _WalletModalState extends State<WalletModal> {
                   ),
                   Text(
                     option.chain == ChainType.solana ? 'Solana' : 'EVM',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textMuted,
                     ),
@@ -468,10 +473,10 @@ class _WalletModalState extends State<WalletModal> {
           width: 1,
         ),
       ),
-      child: Row(
+      child: const Row(
         children: [
-          const Text('🔐'),
-          const SizedBox(width: AppSpacing.sm),
+          Text('🔐'),
+          SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
               'Your keys stay in your wallet. We never have access to your funds.',

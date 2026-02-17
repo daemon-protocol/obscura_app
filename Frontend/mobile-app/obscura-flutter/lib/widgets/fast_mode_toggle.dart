@@ -55,7 +55,7 @@ class FastModeToggle extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: isSelected && modeGradient != null ? modeGradient : null,
           color: isSelected && modeGradient == null
-              ? modeColor.withOpacity(0.2)
+              ? modeColor.withValues(alpha: 0.2)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(AppBorderRadius.full),
           border: isSelected
@@ -183,7 +183,7 @@ class FastModeSwitch extends StatelessWidget {
                   vertical: 2,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.textPrimary.withOpacity(0.2),
+                  color: AppColors.textPrimary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(AppBorderRadius.full),
                 ),
                 child: Text(
@@ -242,7 +242,7 @@ class ExecutionModeSelector extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : AppColors.backgroundCard,
+          color: isSelected ? color.withValues(alpha: 0.1) : AppColors.backgroundCard,
           borderRadius: BorderRadius.circular(AppBorderRadius.md),
           border: Border.all(
             color: isSelected ? color : AppColors.borderDefault,
@@ -263,7 +263,7 @@ class ExecutionModeSelector extends StatelessWidget {
                 ),
               ),
               child: isSelected
-                  ? Icon(
+                  ? const Icon(
                       Icons.check,
                       size: 16,
                       color: AppColors.textPrimary,
@@ -321,17 +321,6 @@ class ExecutionModeSelector extends StatelessWidget {
         return const Color(0xFF6366F1); // Indigo/Blue
       case ExecutionMode.privateCompressed:
         return const Color(0xFF10B981); // Green
-    }
-  }
-
-  Gradient? _getModeGradient(ExecutionMode mode) {
-    switch (mode) {
-      case ExecutionMode.fastCompressed:
-        return AppGradients.blueToPurple;
-      case ExecutionMode.privateCompressed:
-        return AppGradients.greenToPurple;
-      default:
-        return null;
     }
   }
 }
@@ -414,7 +403,7 @@ class SpeedComparisonWidget extends StatelessWidget {
                 height: 8,
                 width: widthFactor * MediaQuery.of(context).size.width * 0.5,
                 decoration: BoxDecoration(
-                  color: isSelected ? color : color.withOpacity(0.5),
+                  color: isSelected ? color : color.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(AppBorderRadius.full),
                 ),
               ),
@@ -457,10 +446,10 @@ class ExecutionModeBadge extends StatelessWidget {
         vertical: AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppBorderRadius.sm),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -500,17 +489,6 @@ class ExecutionModeBadge extends StatelessWidget {
         return const Color(0xFF10B981); // Green
     }
   }
-
-  Gradient? _getModeGradient(ExecutionMode mode) {
-    switch (mode) {
-      case ExecutionMode.fastCompressed:
-        return AppGradients.blueToPurple;
-      case ExecutionMode.privateCompressed:
-        return AppGradients.greenToPurple;
-      default:
-        return null;
-    }
-  }
 }
 
 /// Hybrid Mode Badge - displays combined mode badges with gradients
@@ -542,7 +520,7 @@ class HybridModeBadge extends StatelessWidget {
         gradient: gradient,
         borderRadius: BorderRadius.circular(AppBorderRadius.sm),
         border: Border.all(
-          color: color.withOpacity(0.5),
+          color: color.withValues(alpha: 0.5),
           width: 1,
         ),
       ),
@@ -673,10 +651,10 @@ class HybridBalanceDisplay extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppBorderRadius.sm),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -716,7 +694,7 @@ class HybridCostComparison extends StatelessWidget {
         gradient: _getBadgeGradient(mode),
         borderRadius: BorderRadius.circular(AppBorderRadius.md),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),

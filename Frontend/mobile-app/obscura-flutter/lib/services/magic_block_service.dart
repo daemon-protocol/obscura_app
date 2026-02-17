@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/magic_block_models.dart';
-import '../config/env.dart';
 
 /// MagicBlock Ephemeral Rollups Service
 ///
@@ -28,9 +26,6 @@ class MagicBlockService {
   late final http.Client _client;
 
   static MagicBlockService? _instance;
-
-  /// Check if instance exists
-  static bool get _instanceExists => _instance != null;
 
   /// Check if service is initialized (public getter)
   static bool get isInitialized => _instance != null;

@@ -110,7 +110,7 @@ class AppGradients {
   // ============================================================
 
   /// Radial glow gradient (for background glows)
-  static final glowGradient = RadialGradient(
+  static const glowGradient = RadialGradient(
     colors: [
       AppColors.brandGlow, // rgba(157, 78, 221, 0.3)
       Color(0x00000000), // transparent
@@ -121,7 +121,7 @@ class AppGradients {
   );
 
   /// Subtle radial glow
-  static final glowGradientSubtle = RadialGradient(
+  static const glowGradientSubtle = RadialGradient(
     colors: [
       AppColors.shadowGlow, // rgba(157, 78, 221, 0.15)
       Color(0x00000000), // transparent

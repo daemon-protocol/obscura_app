@@ -7,7 +7,6 @@ import 'models/magic_block_models.dart';
 import 'models/models.dart';
 import 'theme/app_theme.dart';
 import 'screens/main_navigation_screen.dart';
-import 'screens/home_screen.dart';
 import 'screens/transfer_screen.dart';
 import 'screens/swap_screen.dart';
 import 'screens/dark_pool_screen.dart';

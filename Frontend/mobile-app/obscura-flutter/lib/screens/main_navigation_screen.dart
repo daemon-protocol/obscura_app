@@ -102,7 +102,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   }
 
   Widget _buildGlassNavigationBar() {
-    final screenHeight = MediaQuery.of(context).size.height;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     const navBarHeight = 80.0;
     const bottomPadding = 20.0; // Safe area padding
@@ -179,8 +178,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                     gradient: isSelected
                         ? LinearGradient(
                             colors: [
-                              AppColors.brandPrimary.withOpacity(0.2),
-                              AppColors.brandPrimary.withOpacity(0.1),
+                              AppColors.brandPrimary.withValues(alpha: 0.2),
+                              AppColors.brandPrimary.withValues(alpha: 0.1),
                             ],
                           )
                         : null,
@@ -203,7 +202,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
               height: 3,
               decoration: BoxDecoration(
                 gradient: isSelected
-                    ? LinearGradient(
+                    ? const LinearGradient(
                         colors: [
                           AppColors.brandAccent,
                           AppColors.brandPrimary,
@@ -214,7 +213,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: AppColors.brandPrimary.withOpacity(0.5),
+                          color: AppColors.brandPrimary.withValues(alpha: 0.5),
                           blurRadius: 4,
                           spreadRadius: 1,
                         ),
@@ -311,7 +310,7 @@ class FloatingNavigationBar extends StatelessWidget {
                       height: 50,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.brandPrimary.withOpacity(0.15)
+                            ? AppColors.brandPrimary.withValues(alpha: 0.15)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -358,13 +357,13 @@ class PillNavigationBar extends StatelessWidget {
           child: Container(
             height: 60,
             decoration: BoxDecoration(
-              color: AppColors.background.card.withOpacity(0.8),
+              color: AppColors.background.card.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(999),
               border: Border.all(
                 color: AppColors.border.glass,
                 width: 1,
               ),
-              boxShadow: [AppShadows.sm],
+              boxShadow: const [AppShadows.sm],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -382,12 +381,12 @@ class PillNavigationBar extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.brandPrimary.withOpacity(0.2)
+                            ? AppColors.brandPrimary.withValues(alpha: 0.2)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(999),
                         border: isSelected
                             ? Border.all(
-                                color: AppColors.brandPrimary.withOpacity(0.3),
+                                color: AppColors.brandPrimary.withValues(alpha: 0.3),
                                 width: 1,
                               )
                             : null,

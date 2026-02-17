@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../theme/theme.dart';
-import '../theme/app_animations.dart';
 
 /// Animated Glow Widget
 ///
@@ -87,7 +86,7 @@ class _AnimatedGlowState extends State<AnimatedGlow>
                   : null,
               boxShadow: [
                 BoxShadow(
-                  color: effectiveColor.withOpacity(_opacityAnimation.value),
+                  color: effectiveColor.withValues(alpha: _opacityAnimation.value),
                   blurRadius: widget.blurSigma,
                   spreadRadius: widget.blurSigma / 2,
                 ),
@@ -202,7 +201,7 @@ class _PulseGlowContainerState extends State<PulseGlowContainer>
             borderRadius: effectiveBorderRadius,
             boxShadow: [
               BoxShadow(
-                color: effectiveColor.withOpacity(_opacityAnimation.value),
+                color: effectiveColor.withValues(alpha: _opacityAnimation.value),
                 blurRadius: 20 * _scaleAnimation.value,
                 spreadRadius: 5 * _scaleAnimation.value,
               ),
@@ -213,7 +212,7 @@ class _PulseGlowContainerState extends State<PulseGlowContainer>
             decoration: BoxDecoration(
               borderRadius: effectiveBorderRadius,
               border: Border.all(
-                color: effectiveColor.withOpacity(_opacityAnimation.value * 0.5),
+                color: effectiveColor.withValues(alpha: _opacityAnimation.value * 0.5),
                 width: 1,
               ),
             ),
@@ -301,7 +300,6 @@ class _StatusGlowState extends State<StatusGlow>
         glowColor = AppColors.statusWarning;
         break;
       case StatusGlowType.active:
-      default:
         glowColor = AppColors.brandPrimary;
         break;
     }
@@ -320,7 +318,7 @@ class _StatusGlowState extends State<StatusGlow>
                   width: widget.size * _scaleAnimation.value,
                   height: widget.size * _scaleAnimation.value,
                   decoration: BoxDecoration(
-                    color: glowColor.withOpacity(0.3),
+                    color: glowColor.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
                 );
@@ -334,7 +332,7 @@ class _StatusGlowState extends State<StatusGlow>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: glowColor.withOpacity(0.5),
+                  color: glowColor.withValues(alpha: 0.5),
                   blurRadius: 8,
                   spreadRadius: 2,
                 ),
@@ -430,7 +428,6 @@ class _ConnectionIndicatorState extends State<ConnectionIndicator>
         statusLabel = 'Active';
         break;
       case ConnectionStatus.disconnected:
-      default:
         statusColor = AppColors.textMuted;
         statusLabel = 'Disconnected';
         break;
@@ -449,7 +446,7 @@ class _ConnectionIndicatorState extends State<ConnectionIndicator>
                 width: 8 + (4 * _controller.value),
                 height: 8 + (4 * _controller.value),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.3 - (0.2 * _controller.value)),
+                  color: statusColor.withValues(alpha: 0.3 - (0.2 * _controller.value)),
                   shape: BoxShape.circle,
                 ),
               );
@@ -464,7 +461,7 @@ class _ConnectionIndicatorState extends State<ConnectionIndicator>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: statusColor.withOpacity(0.5),
+                color: statusColor.withValues(alpha: 0.5),
                 blurRadius: _shouldAnimate() ? 8 : 4,
                 spreadRadius: _shouldAnimate() ? 2 : 0,
               ),

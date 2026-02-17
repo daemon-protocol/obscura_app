@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:obscura_vault/models/magic_block_models.dart';
 import 'package:obscura_vault/widgets/fast_mode_toggle.dart';
-import 'package:obscura_vault/theme/theme.dart';
 
 void main() {
   // Create a testable widget wrapper with theme
@@ -20,15 +19,11 @@ void main() {
 
   group('FastModeToggle Widget Tests', () {
     testWidgets('test_FastModeToggle_renders_all_6_modes', (tester) async {
-      int selectedCount = 0;
-
       await tester.pumpWidget(
         buildTestWidget(
           FastModeToggle(
             mode: ExecutionMode.standard,
-            onChanged: (mode) {
-              selectedCount++;
-            },
+            onChanged: (mode) {},
           ),
         ),
       );
@@ -291,7 +286,7 @@ void main() {
     testWidgets('test_ExecutionModeBadge_renders', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          ExecutionModeBadge(mode: ExecutionMode.fast),
+          const ExecutionModeBadge(mode: ExecutionMode.fast),
         ),
       );
 
@@ -303,7 +298,7 @@ void main() {
       // Test fast compressed badge
       await tester.pumpWidget(
         buildTestWidget(
-          ExecutionModeBadge(mode: ExecutionMode.fastCompressed),
+          const ExecutionModeBadge(mode: ExecutionMode.fastCompressed),
         ),
       );
 
@@ -313,7 +308,7 @@ void main() {
       // Test private compressed badge
       await tester.pumpWidget(
         buildTestWidget(
-          ExecutionModeBadge(mode: ExecutionMode.privateCompressed),
+          const ExecutionModeBadge(mode: ExecutionMode.privateCompressed),
         ),
       );
 
@@ -326,7 +321,7 @@ void main() {
     testWidgets('test_HybridModeBadge_renders', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridModeBadge(mode: ExecutionMode.fastCompressed),
+          const HybridModeBadge(mode: ExecutionMode.fastCompressed),
         ),
       );
 
@@ -336,7 +331,7 @@ void main() {
     testWidgets('test_HybridModeBadge_shows_description_when_enabled', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridModeBadge(
+          const HybridModeBadge(
             mode: ExecutionMode.fastCompressed,
             showDescription: true,
           ),
@@ -350,7 +345,7 @@ void main() {
     testWidgets('test_HybridModeBadge_non_hybrid_returns_standard_badge', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridModeBadge(mode: ExecutionMode.fast),
+          const HybridModeBadge(mode: ExecutionMode.fast),
         ),
       );
 
@@ -361,7 +356,7 @@ void main() {
     testWidgets('test_HybridModeBadge_privateCompressed', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridModeBadge(
+          const HybridModeBadge(
             mode: ExecutionMode.privateCompressed,
             showDescription: true,
           ),
@@ -377,7 +372,7 @@ void main() {
     testWidgets('test_HybridBalanceDisplay_shows_total_balance', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridBalanceDisplay(
+          const HybridBalanceDisplay(
             regularBalance: 1.5,
             compressedBalance: 0.5,
             mode: ExecutionMode.compressed, // Changed to compressed to show total
@@ -392,7 +387,7 @@ void main() {
     testWidgets('test_HybridBalanceDisplay_shows_breakdown_for_compression_modes', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridBalanceDisplay(
+          const HybridBalanceDisplay(
             regularBalance: 1.5,
             compressedBalance: 0.5,
             mode: ExecutionMode.compressed,
@@ -408,7 +403,7 @@ void main() {
     testWidgets('test_HybridBalanceDisplay_shows_hybrid_emoji', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridBalanceDisplay(
+          const HybridBalanceDisplay(
             regularBalance: 1.5,
             compressedBalance: 0.5,
             mode: ExecutionMode.fastCompressed,
@@ -423,7 +418,7 @@ void main() {
     testWidgets('test_HybridBalanceDisplay_no_compression_no_breakdown', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridBalanceDisplay(
+          const HybridBalanceDisplay(
             regularBalance: 2.0,
             compressedBalance: 0.0,
             mode: ExecutionMode.fast,
@@ -441,7 +436,7 @@ void main() {
     testWidgets('test_HybridCostComparison_shows_for_hybrid_modes', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridCostComparison(mode: ExecutionMode.fastCompressed),
+          const HybridCostComparison(mode: ExecutionMode.fastCompressed),
         ),
       );
 
@@ -452,7 +447,7 @@ void main() {
     testWidgets('test_HybridCostComparison_privateCompressed', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridCostComparison(mode: ExecutionMode.privateCompressed),
+          const HybridCostComparison(mode: ExecutionMode.privateCompressed),
         ),
       );
 
@@ -462,7 +457,7 @@ void main() {
     testWidgets('test_HybridCostComparison_hidden_for_non_hybrid', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridCostComparison(mode: ExecutionMode.fast),
+          const HybridCostComparison(mode: ExecutionMode.fast),
         ),
       );
 
@@ -474,7 +469,7 @@ void main() {
     testWidgets('test_HybridCostComparison_hidden_for_standard', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
-          HybridCostComparison(mode: ExecutionMode.standard),
+          const HybridCostComparison(mode: ExecutionMode.standard),
         ),
       );
 

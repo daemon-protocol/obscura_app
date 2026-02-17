@@ -5,7 +5,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:solana/solana.dart';
 import 'package:web3dart/web3dart.dart';
 import '../models/models.dart';
-import '../models/magic_block_models.dart';
 import '../services/helius_service.dart';
 import '../services/magic_block_service.dart';
 
@@ -241,7 +240,7 @@ class WalletProvider with ChangeNotifier {
     // For demo, return mock signature
     final random = DateTime.now().millisecondsSinceEpoch;
     return base64Encode(
-        List.generate(64, (_) => random % 256).map((e) => e as int).toList());
+        List.generate(64, (_) => random % 256));
   }
 
   Future<String> _signEVMTransaction(Map<String, dynamic> transaction) async {
@@ -329,7 +328,7 @@ class WalletProvider with ChangeNotifier {
       final magicBlock = MagicBlockService.instance;
 
       // Sign the transaction first
-      final signedTransaction = await _signSolanaTransaction({});
+      await _signSolanaTransaction({});
 
       // Send via MagicBlock Router
       final result = await magicBlock.sendTransaction(

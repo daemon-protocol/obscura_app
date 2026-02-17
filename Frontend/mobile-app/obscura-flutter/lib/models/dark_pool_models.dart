@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 /// Order side (buy or sell)
 enum OrderSide {
   buy,
