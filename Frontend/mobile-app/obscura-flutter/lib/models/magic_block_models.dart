@@ -473,12 +473,17 @@ class MagicBlockConfig {
     );
   }
 
-  /// Devnet validators
+  /// Devnet validators (from official MagicBlock docs)
   static const Map<String, String> devnetValidators = {
     'asia': 'MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57',
-    'eu': 'MEUEuQfpPYQFvpZYMmwvbJeYpNUYDVbqLNcGJPc5ZwK',
-    'us': 'MFVa7oPEvPZxmVeLgyqhYQJt2PkjfVdvZ3hNKVRWP3Z',
+    'eu': 'MEUGGrYPxKk17hCr7wpT6s8dtNokZj5U2L57vjYMS8e',
+    'us': 'MUS3hc9TCw4cGC12vHNoYcCGzJG1txjgQLZWVoeNHNd',
+    'tee': 'FnE6VJT5QNZdedZPnCoLsARgBwoE6DeJNjBs2H1gySXA',
   };
+
+  /// Access Control Program for PER visibility restrictions
+  static const String accessControlProgramId =
+      'ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1';
 
   /// Get validator for region on devnet
   static String? getDevnetValidator(String region) {
