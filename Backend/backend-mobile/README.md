@@ -57,6 +57,10 @@ programs/obscura-per/src/lib.rs
 | US     | `MUS3hc9TCw4cGC12vHNoYcCGzJG1txjgQLZWVoeNHNd`  |
 | TEE    | `FnE6VJT5QNZdedZPnCoLsARgBwoE6DeJNjBs2H1gySXA` |
 
+## Documentation
+
+- [Deployment Costs](docs/DEPLOYMENT_COSTS.md) - Mainnet deployment cost analysis
+
 ## Key Programs
 
 - **Delegation**: `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`
